@@ -21,7 +21,7 @@ const AskQuestion = () => {
             // Tags ko string se array mein badalna zaroori hai
             const tagsArray = tags ? tags.split(',').map(tag => tag.trim()) : [];
             
-            const res = await axios.post('http://localhost:5000/api/questions', {
+            const res = await axios.post('https://so-lite-backend.onrender.com/api/questions', {
                 title,
                 description,
                 tags: tagsArray,

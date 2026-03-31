@@ -12,7 +12,7 @@ const Signup = () => {
         e.preventDefault();
         try {
             // Dhyaan dena: Backend mein humne '/register' banaya hai
-            const res = await axios.post('http://localhost:5000/api/auth/register', {
+            const res = await axios.post('https://so-lite-backend.onrender.com/api/auth/register', {
                 username,
                 email,
                 password

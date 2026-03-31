@@ -12,11 +12,11 @@ const QuestionDetail = () => {
     const loadAllDetails = async () => {
         try {
             // Sawal fetch karein
-            const qRes = await axios.get(`http://localhost:5000/api/questions/${id}`);
+            const qRes = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             setQuestion(qRes.data);
 
             // Answers fetch karein
-            const aRes = await axios.get(`http://localhost:5000/api/answer/${id}`);
+            const aRes = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             setAnswers(aRes.data);
         } catch (err) {
             console.error("Fetch Error:", err);
@@ -34,7 +34,7 @@ const QuestionDetail = () => {
 
         try {
             // Yahan error tha, ab fix hai
-            await axios.post('http://localhost:5000/api/answer', {
+            await axios.post('https://so-lite-backend.onrender.com/api/answer', {
                 body: answerBody,
                 userId,
                 questionId: id
