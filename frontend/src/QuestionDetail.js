@@ -25,7 +25,7 @@ const QuestionDetail = () => {
         });
         setAnsBody('');
         alert("Answer save ho gaya! ✅");
-        load(); // Refresh list
+        window.location.reload();
     };
 
     return (
