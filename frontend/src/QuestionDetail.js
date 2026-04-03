@@ -12,9 +12,9 @@ const QuestionDetail = () => {
 
     const loadData = async () => {
         try {
+            // Backend URL check karo
             const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             setQuestion(res.data);
-            // Safety Check: Hamesha array hi set hoga
             setAnswers(Array.isArray(res.data.answers) ? res.data.answers : []);
             setLoading(false);
         } catch (err) {
@@ -28,7 +28,7 @@ const QuestionDetail = () => {
     const handlePost = async (e) => {
         e.preventDefault();
         const uId = localStorage.getItem('userId');
-        if (!uId) return alert("Bhai, Login karo!");
+        if (!uId) return alert("Login karo!");
 
         try {
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
@@ -38,40 +38,35 @@ const QuestionDetail = () => {
             });
             setAnswerBody('');
             alert("Answer post ho gaya! ✅");
-            loadData(); // Turant naya answer dikhane ke liye
+            loadData(); // Success ke baad turant refresh
         } catch (err) {
             alert("Error: " + (err.response?.data?.message || "Server error"));
         }
     };
 
-    if (loading) return <h2 style={{textAlign:'center'}}>Loading...</h2>;
+    if (loading) return <h2>Loading...</h2>;
 
     return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: 'auto', fontFamily: 'Arial' }}>
+        <div style={{ padding: '20px', maxWidth: '800px', margin: 'auto' }}>
             <h1>{question?.title}</h1>
-            <p style={{fontSize:'18px'}}>{question?.body}</p>
+            <p>{question?.body}</p>
             <hr />
             <h3>{answers.length} Answers</h3>
             {answers.map((a) => (
-                <div key={a._id} style={{ border: '1px solid #ddd', padding: '15px', margin: '10px 0', borderRadius:'8px' }}>
+                <div key={a._id} style={{ border: '1px solid #ddd', padding: '10px', margin: '10px 0' }}>
                     <p>{a.body}</p>
-                    <div style={{textAlign:'right'}}>
-                        <small style={{color:'#0074cc'}}>— {a.user?.username || "Technical User"}</small>
-                    </div>
+                    <small>By: {a.user?.username || "Developer"}</small>
                 </div>
             ))}
-            <form onSubmit={handlePost} style={{ marginTop: '30px', background:'#f4f4f4', padding:'20px', borderRadius:'10px' }}>
-                <h4>Aapka Solution:</h4>
+            <form onSubmit={handlePost}>
                 <textarea 
                     value={answerBody} 
                     onChange={(e) => setAnswerBody(e.target.value)}
-                    style={{ width: '100%', height: '120px', padding:'10px', borderRadius:'5px' }}
-                    placeholder="LIFO logic samjhao..."
+                    style={{ width: '100%', height: '100px' }}
+                    placeholder="Apna answer likho..."
                     required
                 />
-                <button type="submit" style={{ marginTop:'10px', padding:'10px 20px', background: '#0074cc', color: 'white', border:'none', borderRadius:'5px', cursor:'pointer' }}>
-                    Post Answer
-                </button>
+                <button type="submit">Post Answer</button>
             </form>
         </div>
     );
