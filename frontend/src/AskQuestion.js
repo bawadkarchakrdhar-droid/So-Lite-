@@ -11,29 +11,51 @@ const AskQuestion = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token'); // Check if you use tokens
+            // Sahi Backend URL check karein
             await axios.post('https://so-lite-backend.onrender.com/api/questions', {
                 title,
                 body,
                 tags: tags.split(',').map(tag => tag.trim()),
                 userId: localStorage.getItem('userId')
             });
-            alert("Question post ho gaya! 🚀");
+            alert("Sawal post ho gaya! 🚀");
             navigate('/dashboard');
         } catch (err) {
             console.error(err);
-            alert("Question post nahi hua! Connection check karein.");
+            alert("Network Error: Backend connect nahi ho pa raha!");
         }
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>Pucho Sawal</h2>
-            <form onSubmit={handleSubmit}>
-                <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required /><br/>
-                <textarea placeholder="Description" value={body} onChange={(e) => setBody(e.target.value)} required /><br/>
-                <input placeholder="Tags (comma separated)" value={tags} onChange={(e) => setTags(e.target.value)} /><br/>
-                <button type="submit">Post Question</button>
+        <div style={{ maxWidth: '600px', margin: '40px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px', fontFamily: 'Arial' }}>
+            <h2 style={{ textAlign: 'center', color: '#333' }}>Pucho Sawal</h2>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <input 
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px' }}
+                    placeholder="Title (e.g. What is React?)" 
+                    value={title} 
+                    onChange={(e) => setTitle(e.target.value)} 
+                    required 
+                />
+                <textarea 
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px', height: '120px' }}
+                    placeholder="Describe your problem..." 
+                    value={body} 
+                    onChange={(e) => setBody(e.target.value)} 
+                    required 
+                />
+                <input 
+                    style={{ padding: '12px', border: '1px solid #ccc', borderRadius: '4px' }}
+                    placeholder="Tags (react, js, frontend)" 
+                    value={tags} 
+                    onChange={(e) => setTags(e.target.value)} 
+                />
+                <button 
+                    type="submit" 
+                    style={{ background: '#007bff', color: 'white', padding: '12px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                    Post Question
+                </button>
             </form>
         </div>
     );
