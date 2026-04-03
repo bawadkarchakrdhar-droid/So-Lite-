@@ -3,23 +3,33 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const QuestionDetail = () => {
-    const { id } = useParams(); 
+    const { id } = useParams();
     const navigate = useNavigate();
     const [question, setQuestion] = useState(null);
-    const [answers, setAnswers] = useState([]);
+    const [answers, setAnswers] = useState([]); // Default empty array rakha hai
     const [answerBody, setAnswerBody] = useState('');
+    const [loading, setLoading] = useState(true);
 
+    // 1. Backend se data mangwane ka function
     const loadAllDetails = async () => {
         try {
-            // Sawal fetch karein
-            const qRes = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
-            setQuestion(qRes.data);
-
-            // Answers fetch karein
-            const aRes = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
-            setAnswers(aRes.data);
+            // Live backend URL use kar rahe hain
+            const res = await axios.get(`https://so-lite-backend.onrender.com/api/question/${id}`);
+            
+            setQuestion(res.data);
+            
+            // Yahan error fix hai: Agar answers nahi hain, toh khali list ([]) set hogi
+            // Taki .map() crash na ho
+            if (res.data && res.data.answers) {
+                setAnswers(res.data.answers);
+            } else {
+                setAnswers([]);
+            }
+            
+            setLoading(false);
         } catch (err) {
-            console.error("Fetch Error:", err);
+            console.error("Data laane mein lafda:", err);
+            setLoading(false);
         }
     };
 
@@ -27,81 +37,88 @@ const QuestionDetail = () => {
         loadAllDetails();
     }, [id]);
 
+    // 2. Naya Answer submit karne ka logic
     const handleAnswerSubmit = async (e) => {
         e.preventDefault();
         const userId = localStorage.getItem('userId');
-        if (!userId) return navigate('/login');
+        
+        if (!userId) {
+            alert("Bhai, pehle Login toh kar lo!");
+            return navigate('/login');
+        }
 
         try {
-            // Yahan error tha, ab fix hai
+            // "body:" keyword hataya kyunki axios direct object leta hai
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-                body: answerBody,
+                answerBody,
                 userId,
                 questionId: id
             });
+            
             setAnswerBody('');
-            loadAllDetails(); // Naya answer turant dikhane ke liye
+            loadAllDetails(); // Taki naya answer turant dikhe
             alert("Answer post ho gaya! ✅");
         } catch (err) {
-            alert("Server Error: Backend ya Database check karo!");
+            alert("Server Error: Answer post nahi ho paya.");
         }
     };
 
-    if (!question) return (
-        <div style={{ textAlign: 'center', marginTop: '50px', fontFamily: 'Arial' }}>
-            <h2>Loading...</h2>
-            <p>Bhai, thoda sabr karo, data aa raha hai!</p>
-        </div>
-    );
+    if (loading) {
+        return (
+            <div style={{ textAlign: 'center', marginTop: '100px' }}>
+                <h2>Loading...</h2>
+                <p>Bhai, backend jaag raha hai, thoda sabr rakho!</p>
+            </div>
+        );
+    }
 
     return (
-        <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '0 20px', fontFamily: 'Arial' }}>
-            <button 
-                onClick={() => navigate('/dashboard')} 
-                style={{ marginBottom: '25px', padding: '8px 18px', border: '1px solid #dfe6e9', borderRadius: '5px', backgroundColor: '#fff', cursor: 'pointer' }}
-            >
-                ← Back to Dashboard
-            </button>
-            
-            <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', border: '1px solid #f1f2f6' }}>
-                <h1 style={{ color: '#2d3436', fontSize: '28px', marginBottom: '15px', fontWeight: '700' }}>{question.title}</h1>
-                <div style={{ fontSize: '16px', color: '#3b4045', lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>
-                    {question.description}
-                </div>
-                <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px', textAlign: 'right' }}>
-                    <small style={{ color: '#6a737c' }}>Asked by <b style={{ color: '#0074cc' }}>{question.user?.username}</b></small>
-                </div>
+        <div style={{ padding: '20px', maxWidth: '900px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
+            {/* Question Part */}
+            <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                <h1 style={{ color: '#2c3e50' }}>{question?.title}</h1>
+                <hr />
+                <p style={{ fontSize: '17px', color: '#34495e', whiteSpace: 'pre-wrap' }}>{question?.body}</p>
             </div>
 
-            <h3 style={{ marginTop: '40px', color: '#2d3436', borderBottom: '2px solid #6c5ce7', display: 'inline-block', paddingBottom: '5px' }}>
+            {/* Answers Part */}
+            <h3 style={{ marginTop: '40px', borderBottom: '2px solid #6c5ce7', display: 'inline-block' }}>
                 {answers.length} Answers
             </h3>
-            
-            <div style={{ marginTop: '20px' }}>
-                {answers.map((ans) => (
-                    <div key={ans._id} style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '8px', marginBottom: '15px', border: '1px solid #f1f2f6' }}>
-                        <p style={{ fontSize: '15px', color: '#232629' }}>{ans.body}</p>
-                        <div style={{ textAlign: 'right', marginTop: '10px' }}>
-                            <small style={{ color: '#0074cc' }}>— {ans.user?.username}</small>
-                        </div>
-                    </div>
-                ))}
-            </div>
 
-            <form onSubmit={handleAnswerSubmit} style={{ marginTop: '40px', backgroundColor: '#f8f9fb', padding: '25px', borderRadius: '12px', border: '1px solid #e3e6e8' }}>
-                <h4 style={{ marginBottom: '15px', fontSize: '18px' }}>Your Answer</h4>
-                <textarea 
-                    style={{ width: '100%', padding: '15px', borderRadius: '8px', border: '1px solid #dfe6e9', fontSize: '15px', outlineColor: '#6c5ce7' }} 
-                    rows="6" 
-                    value={answerBody} 
-                    onChange={(e) => setAnswerBody(e.target.value)}
-                    placeholder="Write your technical solution here..."
-                    required
-                />
-                <button type="submit" style={{ marginTop: '20px', padding: '12px 35px', background: 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 4px 12px rgba(108,92,231,0.2)' }}>
-                    Post Your Answer
-                </button>
-            </form>
+            <div style={{ marginTop: '20px' }}>
+    {Array.isArray(answers) && answers.length > 0 ? (
+        answers.map((ans) => (
+            <div key={ans._id} style={{ marginBottom: '15px', padding: '15px', border: '1px solid #eee', borderRadius: '5px' }}>
+                <p>{ans.answerBody || ans.body}</p>
+                <div style={{ textAlign: 'right' }}>
+                    <small>— {ans.user?.username || "Technical User"}</small>
+                </div>
+            </div>
+        ))
+    ) : (
+        <p>Abhi koi answer nahi hai.</p>
+    )}
+</div>
+            
+
+            {/* Answer Form */}
+            <div style={{ marginTop: '50px', padding: '20px', background: '#f8f9fa', borderRadius: '10px' }}>
+                <h3>Aapka Solution:</h3>
+                <form onSubmit={handleAnswerSubmit}>
+                    <textarea 
+                        style={{ width: '100%', padding: '15px', borderRadius: '5px', border: '1px solid #ccc', fontSize: '16px' }}
+                        rows="6"
+                        value={answerBody}
+                        onChange={(e) => setAnswerBody(e.target.value)}
+                        placeholder="Yahan apna code ya solution likhein..."
+                        required
+                    />
+                    <button type="submit" style={{ marginTop: '15px', padding: '12px 30px', backgroundColor: '#6c5ce7', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '16px' }}>
+                        Post Answer
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };
