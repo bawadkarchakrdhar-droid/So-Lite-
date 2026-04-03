@@ -10,53 +10,61 @@ const QuestionDetail = () => {
 
     const loadData = async () => {
         try {
-            // Sahi URL check karo
+            // Check URL: https://so-lite-backend.onrender.com
             const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             setQuestion(res.data);
-            // Answers fetch karne ka sahi tarika
+            // Array check taaki crash na ho
             setAnswers(Array.isArray(res.data.answers) ? res.data.answers : []);
         } catch (err) {
             console.error("Fetch Error:", err);
         }
     };
 
-    useEffect(() => { loadData(); }, [id]);
+    useEffect(() => {
+        if (id) loadData();
+    }, [id]);
 
     const handlePost = async (e) => {
         e.preventDefault();
+        const uId = localStorage.getItem('userId');
+        if (!uId) return alert("Login please!");
+
         try {
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
                 answerBody,
-                userId: localStorage.getItem('userId'),
+                userId: uId,
                 questionId: id
             });
             setAnswerBody('');
-            alert("Answer save ho gaya! ✅");
-            loadData(); 
+            alert("Answer post ho gaya! ✅");
+            loadData(); // Refresh list
         } catch (err) {
-            alert("Error saving answer");
+            alert("Error: Server connect nahi ho raha");
         }
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h1>{question?.title}</h1>
-            <p>{question?.body}</p>
+        <div style={{ padding: '20px', maxWidth: '800px', margin: 'auto' }}>
+            <h2>{question?.title}</h2>
+            <p style={{ background: '#f4f4f4', padding: '10px' }}>{question?.body}</p>
             <hr />
             <h3>{answers.length} Answers</h3>
-            {answers.map((a) => (
-                <div key={a._id} style={{ border: '1px solid #ddd', margin: '10px 0', padding: '10px' }}>
-                    <p>{a.body}</p>
+            {answers.map((ans) => (
+                <div key={ans._id} style={{ borderBottom: '1px solid #ccc', padding: '10px' }}>
+                    <p>{ans.body}</p>
                 </div>
             ))}
-            <form onSubmit={handlePost}>
+            <form onSubmit={handlePost} style={{ marginTop: '20px' }}>
                 <textarea 
                     value={answerBody} 
                     onChange={(e) => setAnswerBody(e.target.value)} 
-                    placeholder="Apna answer yahan likhein..."
+                    style={{ width: '100%', height: '100px' }}
+                    placeholder="Apna answer likho..."
                     required 
                 />
-                <button type="submit">Post Answer</button>
+                <button type="submit" style={{ marginTop: '10px', padding: '10px 20px', cursor: 'pointer' }}>
+                    Post Answer
+                </button>
             </form>
         </div>
     );
