@@ -8,28 +8,24 @@ router.post('/', async (req, res) => {
     try {
         const { answerBody, userId, questionId } = req.body;
 
-        // Validation check
-        if (!answerBody || !userId || !questionId) {
-            return res.status(400).json({ message: "Fields missing hain!" });
-        }
-
-        // 1. Answer create aur save karo
+        // 1. Pehle Answer save karo
         const newAnswer = new Answer({
-            body: answerBody,
+            body: answerBody, 
             user: userId,
             question: questionId
         });
         const savedAnswer = await newAnswer.save();
 
-        // 2. Question model mein is answer ko link karo (Sabse important)
+        // 2. IMPORTANT: Question ke answers array mein iski ID push karo
+        // Iske bina refresh karne par answer nahi dikhega
         await Question.findByIdAndUpdate(questionId, {
             $push: { answers: savedAnswer._id }
         });
 
         res.status(201).json(savedAnswer);
     } catch (err) {
-        console.error("Server Error:", err);
-        res.status(500).json({ message: "Backend crash!", error: err.message });
+        console.error("Backend Error:", err);
+        res.status(500).json({ message: "Database error", error: err.message });
     }
 });
 
