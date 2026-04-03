@@ -14,7 +14,9 @@ const QuestionDetail = () => {
         setAnswers(res.data.answers || []);
     };
 
-    useEffect(() => { load(); }, [id]);
+    useEffect(() => { load();
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+     }, []);
 
     const handleAns = async (e) => {
         e.preventDefault();
