@@ -10,10 +10,10 @@ const QuestionDetail = () => {
 
     const loadData = async () => {
         try {
-            // Check URL: https://so-lite-backend.onrender.com
+            // Sahi Render Backend URL
             const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             setQuestion(res.data);
-            // Array check taaki crash na ho
+            // Database se aaye answers ko set karna
             setAnswers(Array.isArray(res.data.answers) ? res.data.answers : []);
         } catch (err) {
             console.error("Fetch Error:", err);
@@ -27,7 +27,7 @@ const QuestionDetail = () => {
     const handlePost = async (e) => {
         e.preventDefault();
         const uId = localStorage.getItem('userId');
-        if (!uId) return alert("Login please!");
+        if (!uId) return alert("Pehle login karo!");
 
         try {
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
@@ -36,21 +36,21 @@ const QuestionDetail = () => {
                 questionId: id
             });
             setAnswerBody('');
-            alert("Answer post ho gaya! ✅");
-            loadData(); // Refresh list
+            alert("Answer save ho gaya! ✅");
+            loadData(); // Refresh list immediately
         } catch (err) {
-            alert("Error: Server connect nahi ho raha");
+            alert("Post failed. Check server.");
         }
     };
 
     return (
         <div style={{ padding: '20px', maxWidth: '800px', margin: 'auto' }}>
-            <h2>{question?.title}</h2>
+            <h1>{question?.title}</h1>
             <p style={{ background: '#f4f4f4', padding: '10px' }}>{question?.body}</p>
             <hr />
             <h3>{answers.length} Answers</h3>
             {answers.map((ans) => (
-                <div key={ans._id} style={{ borderBottom: '1px solid #ccc', padding: '10px' }}>
+                <div key={ans._id} style={{ borderBottom: '1px solid #ccc', padding: '10px 0' }}>
                     <p>{ans.body}</p>
                 </div>
             ))}
@@ -62,7 +62,7 @@ const QuestionDetail = () => {
                     placeholder="Apna answer likho..."
                     required 
                 />
-                <button type="submit" style={{ marginTop: '10px', padding: '10px 20px', cursor: 'pointer' }}>
+                <button type="submit" style={{ marginTop: '10px', padding: '10px 20px' }}>
                     Post Answer
                 </button>
             </form>
