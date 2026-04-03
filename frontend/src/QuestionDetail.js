@@ -6,75 +6,38 @@ const QuestionDetail = () => {
     const { id } = useParams();
     const [question, setQuestion] = useState(null);
     const [answers, setAnswers] = useState([]);
-    const [answerBody, setAnswerBody] = useState('');
+    const [ansBody, setAnsBody] = useState('');
 
-    const loadData = async () => {
-        try {
-            // Sahi Render Backend URL
-            const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
-            setQuestion(res.data);
-            if (res.data &&
-                res.data.answer){
-                    setAnswerBody(res.data.answer);
-                } else {
-                    setAnswerBody([]);
-                }
-                setLoading(false);
-            
-        } catch (err) {
-            console.error("Fetch Error:", err);
-            setLoading(false);
-        }
+    const load = async () => {
+        const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
+        setQuestion(res.data);
+        setAnswers(res.data.answers || []);
     };
 
-    useEffect(() => {
-        if (id) loadData();
-    }, [id]);
+    useEffect(() => { load(); }, [id]);
 
-    const handlePost = async (e) => {
+    const handleAns = async (e) => {
         e.preventDefault();
-        const uId = localStorage.getItem('userId');
-        if (!uId) return alert("Pehle login karo!");
-
-        try {
-            await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-                answerBody,
-                userId: uId,
-                questionId: id
-            });
-            setAnswerBody('');
-            alert("Answer save ho gaya! ✅");
-            loadData(); // Refresh list immediately
-        } catch (err) {
-            alert("Post failed. Check server.");
-        }
+        await axios.post('https://so-lite-backend.onrender.com/api/answer', {
+            answerBody: ansBody, userId: localStorage.getItem('userId'), questionId: id
+        });
+        setAnsBody('');
+        alert("Answer save ho gaya! ✅");
+        load(); // Refresh list
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: 'auto' }}>
+        <div style={{ padding: '20px' }}>
             <h1>{question?.title}</h1>
-            <p style={{ background: '#f4f4f4', padding: '10px' }}>{question?.body}</p>
+            <p>{question?.body}</p>
             <hr />
             <h3>{answers.length} Answers</h3>
-            {answers.map((ans) => (
-                <div key={ans._id} style={{ borderBottom: '1px solid #ccc', padding: '10px 0' }}>
-                    <p>{ans.body}</p>
-                </div>
-            ))}
-            <form onSubmit={handlePost} style={{ marginTop: '20px' }}>
-                <textarea 
-                    value={answerBody} 
-                    onChange={(e) => setAnswerBody(e.target.value)} 
-                    style={{ width: '100%', height: '100px' }}
-                    placeholder="Apna answer likho..."
-                    required 
-                />
-                <button type="submit" style={{ marginTop: '10px', padding: '10px 20px' }}>
-                    Post Answer
-                </button>
+            {answers.map(a => <div key={a._id} style={{borderBottom: '1px solid #eee', padding: '10px'}}><p>{a.body}</p></div>)}
+            <form onSubmit={handleAns}>
+                <textarea value={ansBody} onChange={(e) => setAnsBody(e.target.value)} required style={{width: '100%', height: '80px'}} />
+                <button type="submit">Post Answer</button>
             </form>
         </div>
     );
 };
-
 export default QuestionDetail;

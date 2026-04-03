@@ -1,29 +1,19 @@
 const express = require('express');
-const router = require('express').Router();
+const router = express.Router();
 const Answer = require('../models/Answer');
 const Question = require('../models/Question');
 
 router.post('/', async (req, res) => {
     try {
         const { answerBody, userId, questionId } = req.body;
+        const newAns = new Answer({ body: answerBody, user: userId, question: questionId });
+        const savedAns = await newAns.save();
 
-        const newAnswer = new Answer({
-            body: answerBody,
-            user: userId,
-            question: questionId
-        });
-
-        const savedAnswer = await newAnswer.save();
-
-        // Answer ID ko Question model ke andar push karna
-        await Question.findByIdAndUpdate(questionId, {
-            $push: { answers: savedAnswer._id }
-        });
-
-        res.status(201).json(savedAnswer);
+        // Question collection mein answer ki ID push karo
+        await Question.findByIdAndUpdate(questionId, { $push: { answers: savedAns._id } });
+        res.status(201).json(savedAns);
     } catch (err) {
-        res.status(500).json({ message: "Error saving answer", error: err.message });
+        res.status(500).json({ error: "Answer save nahi hua" });
     }
 });
-
 module.exports = router;
