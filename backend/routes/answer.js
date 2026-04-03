@@ -1,31 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const Answer = require('../models/Answer'); // Check karo path sahi hai ya nahi
+const Answer = require('../models/Answer');
 const Question = require('../models/Question');
 
+// POST: /api/answer
 router.post('/', async (req, res) => {
     try {
-        const { answerBody, body, userId, questionId } = req.body;
+        const { answerBody, userId, questionId } = req.body;
 
-        // 1. Naya Answer create karo (Dono body fields check kar rahe hain)
+        // 1. Pehle Answer save karo
         const newAnswer = new Answer({
-            body: answerBody || body, 
+            body: answerBody, 
             user: userId,
             question: questionId
         });
 
         const savedAnswer = await newAnswer.save();
+        console.log("Answer Saved in DB:", savedAnswer);
 
-        // 2. IMPORTANT: Question model mein is answer ki ID push karo
-        // Iske bina database mein save toh hoga par question page par dikhega nahi
-        await Question.findByIdAndUpdate(questionId, {
-            $push: { answers: savedAnswer._id }
-        });
+        // 2. CRITICAL STEP: Question ke answers array mein ye ID push karo
+        // Iske bina page refresh karne par answer gayab ho jayega
+        const updatedQuestion = await Question.findByIdAndUpdate(
+            questionId, 
+            { $push: { answers: savedAnswer._id } },
+            { new: true }
+        );
+
+        if (!updatedQuestion) {
+            return res.status(404).json({ message: "Question nahi mila!" });
+        }
 
         res.status(201).json(savedAnswer);
     } catch (err) {
-        console.error("Backend Save Error:", err);
-        res.status(500).json({ message: "Database mein save nahi ho paya", error: err.message });
+        console.error("Backend Error:", err);
+        res.status(500).json({ message: "Database Error", error: err.message });
     }
 });
 
