@@ -2,17 +2,26 @@ const express = require('express');
 const router = express.Router();
 const Question = require('../models/Question');
 
-// GET single question with its answers
+// Saare questions lane ke liye (Dashboard ke liye)
+router.get('/', async (req, res) => {
+    try {
+        const questions = await Question.find().sort({ date: -1 });
+        res.json(questions);
+    } catch (err) {
+        res.status(500).json({ message: "Dashboard load fail" });
+    }
+});
+
+// Single question detail with safe populate
 router.get('/:id', async (req, res) => {
     try {
-        // .populate('answers') likhna compulsory hai answers dikhane ke liye
         const question = await Question.findById(req.params.id).populate('answers');
-        if (!question) {
-            return res.status(404).json({ message: "Question nahi mila" });
-        }
+        if (!question) return res.status(404).json({ message: "Nahi mila" });
         res.json(question);
     } catch (err) {
-        res.status(500).json({ message: "Server error", error: err.message });
+        // Agar populate fail ho toh bina answers ke bhej do crash rokne ke liye
+        const questionOnly = await Question.findById(req.params.id);
+        res.json({ ...questionOnly._doc, answers: [] });
     }
 });
 
