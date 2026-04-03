@@ -6,29 +6,22 @@ const QuestionDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [question, setQuestion] = useState(null);
-    const [answers, setAnswers] = useState([]); // Default empty array rakha hai
+    const [answers, setAnswers] = useState([]);
     const [answerBody, setAnswerBody] = useState('');
     const [loading, setLoading] = useState(true);
 
-    // 1. Backend se data mangwane ka function
+    // 1. Backend se data fetch karne ka function
     const loadAllDetails = async () => {
         try {
-            // Live backend URL use kar rahe hain
             const res = await axios.get(`https://so-lite-backend.onrender.com/api/question/${id}`);
+            console.log("Question Data fetched:", res.data);
             
             setQuestion(res.data);
-            
-            // Yahan error fix hai: Agar answers nahi hain, toh khali list ([]) set hogi
-            // Taki .map() crash na ho
-            if (res.data && res.data.answers) {
-                setAnswers(res.data.answers);
-            } else {
-                setAnswers([]);
-            }
-            
+            // Safety check: Agar answers array nahi hai toh empty array set karo
+            setAnswers(Array.isArray(res.data?.answers) ? res.data.answers : []);
             setLoading(false);
         } catch (err) {
-            console.error("Data laane mein lafda:", err);
+            console.error("Fetch error:", err);
             setLoading(false);
         }
     };
@@ -37,35 +30,40 @@ const QuestionDetail = () => {
         loadAllDetails();
     }, [id]);
 
-    // 2. Naya Answer submit karne ka logic
+    // 2. Answer Submit karne ka function
     const handleAnswerSubmit = async (e) => {
         e.preventDefault();
         const userId = localStorage.getItem('userId');
         
+        // Debugging ke liye data check karein
+        console.log("Submitting with:", { userId, questionId: id, answerBody });
+
         if (!userId) {
-            alert("Bhai, pehle Login toh kar lo!");
+            alert("Bhai, pehle Login karo!");
             return navigate('/login');
         }
 
         try {
-            // "body:" keyword hataya kyunki axios direct object leta hai
-            await axios.post('https://so-lite-backend.onrender.com/api/answer', {
+            const response = await axios.post('https://so-lite-backend.onrender.com/api/answer', {
                 answerBody,
                 userId,
                 questionId: id
             });
             
+            console.log("Post Response:", response.data);
             setAnswerBody('');
-            loadAllDetails(); // Taki naya answer turant dikhe
+            loadAllDetails(); // Naya answer turant dikhane ke liye
             alert("Answer post ho gaya! ✅");
         } catch (err) {
-            alert("Server Error: Answer post nahi ho paya.");
+            console.error("Full Post Error:", err.response?.data || err.message);
+            // Exact error message alert mein dikhayega
+            alert(`Lafda ho gaya: ${err.response?.data?.message || "Server Error"}`);
         }
     };
 
     if (loading) {
         return (
-            <div style={{ textAlign: 'center', marginTop: '100px' }}>
+            <div style={{ textAlign: 'center', marginTop: '100px', fontFamily: 'Arial' }}>
                 <h2>Loading...</h2>
                 <p>Bhai, backend jaag raha hai, thoda sabr rakho!</p>
             </div>
@@ -73,48 +71,44 @@ const QuestionDetail = () => {
     }
 
     return (
-        <div style={{ padding: '20px', maxWidth: '900px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-            {/* Question Part */}
-            <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial' }}>
+            {/* Question Section */}
+            <div style={{ borderBottom: '2px solid #eee', paddingBottom: '20px' }}>
                 <h1 style={{ color: '#2c3e50' }}>{question?.title}</h1>
-                <hr />
-                <p style={{ fontSize: '17px', color: '#34495e', whiteSpace: 'pre-wrap' }}>{question?.body}</p>
+                <p style={{ fontSize: '18px', whiteSpace: 'pre-wrap' }}>{question?.body}</p>
             </div>
 
-            {/* Answers Part */}
-            <h3 style={{ marginTop: '40px', borderBottom: '2px solid #6c5ce7', display: 'inline-block' }}>
-                {answers.length} Answers
-            </h3>
-
-            <div style={{ marginTop: '20px' }}>
-    {Array.isArray(answers) && answers.length > 0 ? (
-        answers.map((ans) => (
-            <div key={ans._id} style={{ marginBottom: '15px', padding: '15px', border: '1px solid #eee', borderRadius: '5px' }}>
-                <p>{ans.answerBody || ans.body}</p>
-                <div style={{ textAlign: 'right' }}>
-                    <small>— {ans.user?.username || "Technical User"}</small>
-                </div>
-            </div>
-        ))
-    ) : (
-        <p>Abhi koi answer nahi hai.</p>
-    )}
-</div>
+            {/* Answers List */}
+            <h3 style={{ marginTop: '30px', color: '#6c5ce7' }}>{answers.length} Answers</h3>
             
+            <div style={{ marginTop: '20px' }}>
+                {Array.isArray(answers) && answers.length > 0 ? (
+                    answers.map((ans) => (
+                        <div key={ans._id} style={{ padding: '15px', border: '1px solid #ddd', borderRadius: '8px', marginBottom: '10px' }}>
+                            <p style={{ margin: '0' }}>{ans.answerBody || ans.body}</p>
+                            <div style={{ textAlign: 'right', marginTop: '10px' }}>
+                                <small style={{ color: '#0074cc' }}>— {ans.user?.username || "Technical User"}</small>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p style={{ color: '#888' }}>Abhi tak koi answer nahi hai. Pehla answer aap likhein!</p>
+                )}
+            </div>
 
             {/* Answer Form */}
-            <div style={{ marginTop: '50px', padding: '20px', background: '#f8f9fa', borderRadius: '10px' }}>
-                <h3>Aapka Solution:</h3>
+            <div style={{ marginTop: '50px', padding: '20px', background: '#f9f9f9', borderRadius: '10px' }}>
+                <h4>Aapka Solution:</h4>
                 <form onSubmit={handleAnswerSubmit}>
                     <textarea 
                         style={{ width: '100%', padding: '15px', borderRadius: '5px', border: '1px solid #ccc', fontSize: '16px' }}
-                        rows="6"
+                        rows="5"
                         value={answerBody}
                         onChange={(e) => setAnswerBody(e.target.value)}
-                        placeholder="Yahan apna code ya solution likhein..."
+                        placeholder="Yahan apna explanation ya code likhein..."
                         required
                     />
-                    <button type="submit" style={{ marginTop: '15px', padding: '12px 30px', backgroundColor: '#6c5ce7', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '16px' }}>
+                    <button type="submit" style={{ marginTop: '15px', padding: '10px 25px', backgroundColor: '#6c5ce7', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
                         Post Answer
                     </button>
                 </form>
