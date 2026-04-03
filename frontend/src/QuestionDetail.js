@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const QuestionDetail = () => {
     const { id } = useParams();
@@ -9,41 +9,71 @@ const QuestionDetail = () => {
     const [ansBody, setAnsBody] = useState('');
 
     const load = async () => {
-        const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
-        setQuestion(res.data);
-        setAnswers(res.data.answers || []);
+        try {
+            // Backend se question aur uske answers fetch ho rahe hain
+            const res = await axios.get(`https://so-lite-backend.onrender.com/api/question/${id}`);
+            setQuestion(res.data);
+            setAnswers(res.data.answers || []); 
+        } catch (err) {
+            console.error("Data load nahi hua", err);
+        }
     };
 
-    useEffect(() => { load();
-        //eslint-disable-next-line react-hooks/exhaustive-deps
-     }, []);
+    useEffect(() => {
+        load();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleAns = async (e) => {
         e.preventDefault();
         try {
-              await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-              answerBody: ansBody, userId: localStorage.getItem('userId'), questionId: id
-        });
-        setAnsBody('');
-        alert("Answer save ho gaya! ✅");
-        window.location.reload();
-    } catch (err)  {
-        alert("Error: Answer save nahi hua!");
-    }
+            await axios.post('https://so-lite-backend.onrender.com/api/answer', {
+                answerBody: ansBody,
+                userId: localStorage.getItem('userId'),
+                questionId: id
+            });
+            setAnsBody('');
+            alert("Answer save ho gaya! ✅");
+            
+            // Ye line page ko refresh karegi taaki naya answer list mein dikhe
+            window.location.reload(); 
+        } catch (err) {
+            alert("Error: Answer save nahi hua!");
+        }
     };
 
     return (
         <div style={{ padding: '20px' }}>
-            <h1>{question?.title}</h1>
-            <p>{question?.body}</p>
-            <hr />
-            <h3>{answers.length} Answers</h3>
-            {answers.map(a => <div key={a._id} style={{borderBottom: '1px solid #eee', padding: '10px'}}><p>{a.body}</p></div>)}
-            <form onSubmit={handleAns}>
-                <textarea value={ansBody} onChange={(e) => setAnsBody(e.target.value)} required style={{width: '100%', height: '80px'}} />
-                <button type="submit">Post Answer</button>
-            </form>
+            {question ? (
+                <>
+                    <h1>{question.title}</h1>
+                    <p>{question.description}</p>
+                    <hr />
+                    <h3>{answers.length} Answers</h3>
+                    {answers.map((a) => (
+                        <div key={a._id} style={{ borderBottom: '1px solid #ccc', padding: '10px 0' }}>
+                            <p>{a.answerBody}</p>
+                        </div>
+                    ))}
+
+                    <form onSubmit={handleAns} style={{ marginTop: '20px' }}>
+                        <textarea
+                            value={ansBody}
+                            onChange={(e) => setAnsBody(e.target.value)}
+                            placeholder="Write your answer..."
+                            rows="4"
+                            cols="50"
+                            required
+                        />
+                        <br />
+                        <button type="submit">Post Answer</button>
+                    </form>
+                </>
+            ) : (
+                <p>Loading question...</p>
+            )}
         </div>
     );
 };
+
 export default QuestionDetail;
