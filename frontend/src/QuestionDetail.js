@@ -20,12 +20,16 @@ const QuestionDetail = () => {
 
     const handleAns = async (e) => {
         e.preventDefault();
-        await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-            answerBody: ansBody, userId: localStorage.getItem('userId'), questionId: id
+        try {
+              await axios.post('https://so-lite-backend.onrender.com/api/answer', {
+              answerBody: ansBody, userId: localStorage.getItem('userId'), questionId: id
         });
         setAnsBody('');
         alert("Answer save ho gaya! ✅");
         window.location.reload();
+    } catch (err)  {
+        alert("Error: Answer save nahi hua!");
+    }
     };
 
     return (
