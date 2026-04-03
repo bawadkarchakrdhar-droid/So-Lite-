@@ -1,40 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const Answer = require('../models/Answer');
+const Answer = require('../models/Answer'); // Check karo path sahi hai ya nahi
+const Question = require('../models/Question');
 
-// 1. Answer post karne ke liye
 router.post('/', async (req, res) => {
     try {
-        const { body, userId, questionId } = req.body;
-        const newAnswer = new Answer({ body, user: userId, question: questionId });
-        await newAnswer.save();
-        res.status(201).json({ msg: "Answer post ho gaya! ✅" });
-    } catch (err) {
-        res.status(500).json({ msg: "Server Error" });
-    }
-});
+        const { answerBody, body, userId, questionId } = req.body;
 
-// 2. Answers fetch karne ke liye
-router.get('/:questionId', async (req, res) => {
-    try {
-        const answers = await Answer.find({ question: req.params.questionId }).populate('user', 'username');
-        res.json(answers);
-    } catch (err) {
-        res.status(500).send("Server Error");
-    }
-});
+        // 1. Naya Answer create karo (Dono body fields check kar rahe hain)
+        const newAnswer = new Answer({
+            body: answerBody || body, 
+            user: userId,
+            question: questionId
+        });
 
-// 3. NEW: Vote update karne ke liye
-router.put('/:id/vote', async (req, res) => {
-    try {
-        const { voteType } = req.body; 
-        const answer = await Answer.findById(req.params.id);
-        if (voteType === 'up') answer.votes += 1;
-        else if (voteType === 'down') answer.votes -= 1;
-        await answer.save();
-        res.json({ votes: answer.votes });
+        const savedAnswer = await newAnswer.save();
+
+        // 2. IMPORTANT: Question model mein is answer ki ID push karo
+        // Iske bina database mein save toh hoga par question page par dikhega nahi
+        await Question.findByIdAndUpdate(questionId, {
+            $push: { answers: savedAnswer._id }
+        });
+
+        res.status(201).json(savedAnswer);
     } catch (err) {
-        res.status(500).send("Vote error");
+        console.error("Backend Save Error:", err);
+        res.status(500).json({ message: "Database mein save nahi ho paya", error: err.message });
     }
 });
 
