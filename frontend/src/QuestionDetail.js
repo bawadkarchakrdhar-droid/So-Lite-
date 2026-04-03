@@ -13,10 +13,17 @@ const QuestionDetail = () => {
             // Sahi Render Backend URL
             const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             setQuestion(res.data);
-            // Database se aaye answers ko set karna
-            setAnswers(Array.isArray(res.data.answers) ? res.data.answers : []);
+            if (res.data &&
+                res.data.answer){
+                    setAnswerBody(res.data.answer);
+                } else {
+                    setAnswerBody([]);
+                }
+                setLoading(false);
+            
         } catch (err) {
             console.error("Fetch Error:", err);
+            setLoading(false);
         }
     };
 
