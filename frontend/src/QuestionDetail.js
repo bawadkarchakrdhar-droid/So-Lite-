@@ -13,6 +13,7 @@ const QuestionDetail = () => {
         try {
             const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             setQuestion(res.data);
+            // Zaroori: Agar answers array hai toh set karo warna khali []
             setAnswers(res.data.answers || []); 
             setLoading(false);
         } catch (err) {
@@ -36,7 +37,7 @@ const QuestionDetail = () => {
             });
             alert("Answer save ho gaya! ✅");
             setAnsBody('');
-            loadData(); // Naya answer turant dikhane ke liye
+            loadData(); // List refresh karne ke liye
         } catch (err) {
             alert("Connection error! Backend check karein.");
         }
@@ -48,23 +49,34 @@ const QuestionDetail = () => {
     return (
         <div className="container mt-5">
             <h2 className="text-primary">{question.title}</h2>
-            <p style={{ whiteSpace: 'pre-wrap' }}>{question.description}</p>
+            <p className="lead" style={{ whiteSpace: 'pre-wrap' }}>{question.description}</p>
             <hr />
+            
             <h4>{answers.length} Answers</h4>
             {answers.map((ans, i) => (
-                <div key={i} className="card mb-2 shadow-sm">
-                    <div className="card-body">{ans.answerBody}</div>
+                <div key={i} className="card mb-3 shadow-sm">
+                    <div className="card-body">
+                        {/* YAHAN DHAYAN DO: 'answerBody' hi hona chahiye */}
+                        <p className={ans.answerBody ? "" : "text-danger"}>
+                            {ans.answerBody || "Data error: Field mismatch"}
+                        </p>
+                        <small className="text-muted">Posted on: {new Date(ans.createdAt).toLocaleDateString()}</small>
+                    </div>
                 </div>
             ))}
+
             <form onSubmit={handleAns} className="mt-4">
-                <textarea 
-                    className="form-control" 
-                    value={ansBody} 
-                    onChange={(e) => setAnsBody(e.target.value)}
-                    placeholder="Write answer here..." 
-                    required 
-                />
-                <button type="submit" className="btn btn-success mt-2">Post Answer</button>
+                <div className="mb-3">
+                    <textarea 
+                        className="form-control" 
+                        value={ansBody} 
+                        onChange={(e) => setAnsBody(e.target.value)}
+                        placeholder="Write answer here..." 
+                        rows="4"
+                        required 
+                    />
+                </div>
+                <button type="submit" className="btn btn-success">Post Answer</button>
             </form>
         </div>
     );
