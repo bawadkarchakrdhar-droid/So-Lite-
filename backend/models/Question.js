@@ -15,7 +15,7 @@ const QuestionSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    // YE RAHI MISSING FIELD - ISSE ANSWERS LINK HONGE
+    // YE FIELD ANSWERS DIKHANE KE LIYE ZAROORI HAI
     answers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Answer'

@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 // Specific question detail with answers
 router.get('/:id', async (req, res) => {
     try {
-        // .populate('answers') likhna zaroori hai details dikhane ke liye
+        // Populate answers zaroori hai
         const question = await Question.findById(req.params.id).populate('answers');
         
         if (!question) {
@@ -24,7 +24,7 @@ router.get('/:id', async (req, res) => {
         res.json(question);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "Server error logic mein hai" });
     }
 });
 
