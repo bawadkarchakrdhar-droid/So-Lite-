@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Question = require('../models/Question');
 
-// Dashboard ke liye saare questions
+// Get all questions for dashboard
 router.get('/', async (req, res) => {
     try {
         const questions = await Question.find().sort({ createdAt: -1 });
@@ -12,16 +12,31 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Specific question detail with populated answers
+// Get single question with answers
 router.get('/:id', async (req, res) => {
     try {
         const question = await Question.findById(req.params.id).populate('answers');
-        if (!question) {
-            return res.status(404).json({ message: "Sawal nahi mila" });
-        }
+        if (!question) return res.status(404).json({ message: "Sawal nahi mila" });
         res.json(question);
     } catch (err) {
-        res.status(500).json({ message: "Server error in populate logic" });
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// Post a new question
+router.post('/', async (req, res) => {
+    try {
+        const { title, description, tags, userId } = req.body;
+        const newQuestion = new Question({
+            title,
+            description,
+            tags,
+            user: userId
+        });
+        const savedQuestion = await newQuestion.save();
+        res.status(201).json(savedQuestion);
+    } catch (err) {
+        res.status(500).json({ message: "Post failed" });
     }
 });
 

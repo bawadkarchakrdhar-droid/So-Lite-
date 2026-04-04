@@ -12,25 +12,48 @@ const AskQuestion = () => {
         e.preventDefault();
         try {
             await axios.post('https://so-lite-backend.onrender.com/api/questions', {
-                title, body, tags: tags.split(','), userId: localStorage.getItem('userId')
+                title,
+                description: body, // Fixed: 'body' mapping to 'description'
+                tags: tags.split(',').map(tag => tag.trim()), 
+                userId: localStorage.getItem('userId')
             });
             alert("Sawal post ho gaya! 🚀");
             navigate('/dashboard');
         } catch (err) {
-            alert("Error: Connection check karein!");
+            console.error(err);
+            alert("Error: Connection check karein!"); //
         }
     };
 
     return (
-        <div style={{ maxWidth: '600px', margin: '40px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
+        <div className="container mt-5" style={{ maxWidth: '600px' }}>
             <h2>Pucho Sawal</h2>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} required style={{padding: '10px'}} />
-                <textarea placeholder="Describe it..." value={body} onChange={(e) => setBody(e.target.value)} required style={{padding: '10px', height: '100px'}} />
-                <input placeholder="Tags (comma separated)" value={tags} onChange={(e) => setTags(e.target.value)} style={{padding: '10px'}} />
-                <button type="submit" style={{background: '#007bff', color: 'white', padding: '10px', cursor: 'pointer'}}>Post Question</button>
+            <form onSubmit={handleSubmit}>
+                <input 
+                    className="form-control mb-3"
+                    placeholder="Title" 
+                    value={title} 
+                    onChange={(e) => setTitle(e.target.value)} 
+                    required 
+                />
+                <textarea 
+                    className="form-control mb-3"
+                    placeholder="Describe it..." 
+                    value={body} 
+                    onChange={(e) => setBody(e.target.value)} 
+                    rows="5"
+                    required 
+                />
+                <input 
+                    className="form-control mb-3"
+                    placeholder="Tags (comma separated)" 
+                    value={tags} 
+                    onChange={(e) => setTags(e.target.value)} 
+                />
+                <button type="submit" className="btn btn-primary w-100">Post Question</button>
             </form>
         </div>
     );
 };
+
 export default AskQuestion;
