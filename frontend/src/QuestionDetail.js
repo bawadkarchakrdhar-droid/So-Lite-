@@ -11,7 +11,7 @@ const QuestionDetail = () => {
     const load = async () => {
         try {
             // Backend se question aur uske answers fetch ho rahe hain
-            const res = await axios.get(`https://so-lite-backend.onrender.com/api/question/${id}`);
+            const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             setQuestion(res.data);
             setAnswers(res.data.answers || []); 
         } catch (err) {
