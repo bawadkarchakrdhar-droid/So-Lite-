@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 // Specific question detail with answers
 router.get('/:id', async (req, res) => {
     try {
-        const question = await Question.findById(req.params.id).populate('answers');
+        const question = await Question.findById(req.params.id);
         if (!question) return res.status(404).json({ message: "Sawal nahi mila" });
         res.json(question);
     } catch (err) {
