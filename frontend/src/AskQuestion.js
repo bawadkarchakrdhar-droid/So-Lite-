@@ -13,91 +13,122 @@ const AskQuestion = () => {
         try {
             await axios.post('https://so-lite-backend.onrender.com/api/questions', {
                 title,
-                description: body, // Fixed backend variable mapping
+                description: body,
                 tags: tags.split(',').map(tag => tag.trim()), 
                 userId: localStorage.getItem('userId')
             });
-            alert("Question Posted Successfully! 🚀");
+            alert("Success! Your question is live. 🚀");
             navigate('/dashboard');
         } catch (err) {
-            console.error(err);
-            alert("Error: Connection failed! Please check backend");
+            alert("Error: Connection check karein!");
         }
     };
 
     return (
-        // Middle Aligned Container using justify-content-center
-        <div className="container mt-5" style={{ minHeight: '80vh' }}>
-            <div className="row justify-content-center align-items-center">
-                <div className="col-lg-8 col-md-10 col-sm-12">
+        <div className="container-fluid py-5" style={{ 
+            background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', 
+            minHeight: '100vh' 
+        }}>
+            <div className="row justify-content-center">
+                <div className="col-lg-7 col-md-9">
                     
-                    {/* Advance English Header Section */}
-                    <div className="mb-5 text-center">
-                        <h1 className="fw-bold text-dark display-6">Ask a Public Question</h1>
-                        <p className="text-muted fs-5">Detailed questions help our community find the best solutions for your technical challenge.</p>
+                    {/* Header with Animation */}
+                    <div className="text-center mb-5 mt-3">
+                        <h1 className="display-5 fw-bold text-dark mb-2" style={{ letterSpacing: '-1px' }}>
+                            Ask a Public Question
+                        </h1>
+                        <p className="text-muted fs-5 mx-auto" style={{ maxWidth: '600px' }}>
+                            Join the community of developers and get answers to your toughest technical challenges.
+                        </p>
                     </div>
 
-                    {/* Main Form Card with advanced styling */}
-                    <div className="card shadow-lg border-0 p-4 p-md-5" style={{ borderRadius: '20px', backgroundColor: '#fff' }}>
-                        <form onSubmit={handleSubmit}>
-                            
-                            {/* Title Field Group */}
-                            <div className="mb-4">
-                                <label className="form-label fw-semibold text-secondary">
-                                    <i className="bi bi-tag-fill me-2"></i>Question Title
-                                </label>
-                                <input 
-                                    className="form-control form-control-lg shadow-none"
-                                    placeholder="e.g. How to handle multiple form inputs in React without useState?" 
-                                    style={{ border: '2px solid #eaecf0', borderRadius: '12px', fontSize: '1rem' }}
-                                    value={title} 
-                                    onChange={(e) => setTitle(e.target.value)} 
-                                    required 
-                                />
-                                <small className="text-muted ms-2">Be specific and imagine you’re asking a peer.</small>
-                            </div>
+                    {/* Premium Glassmorphic Card */}
+                    <div className="card border-0 shadow-lg overflow-hidden" style={{ 
+                        borderRadius: '24px', 
+                        backdropFilter: 'blur(10px)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                    }}>
+                        <div className="card-body p-4 p-md-5">
+                            <form onSubmit={handleSubmit}>
+                                
+                                {/* Floating Title Input */}
+                                <div className="mb-4">
+                                    <label className="form-label small fw-bold text-uppercase text-primary tracking-wider">Title</label>
+                                    <div className="input-group">
+                                        <span className="input-group-text bg-white border-end-0" style={{ borderRadius: '12px 0 0 12px' }}>
+                                            <i className="bi bi-lightning-charge text-warning"></i>
+                                        </span>
+                                        <input 
+                                            className="form-control form-control-lg border-start-0 ps-0"
+                                            placeholder="What's your programming question? Be specific." 
+                                            style={{ borderRadius: '0 12px 12px 0', fontSize: '1rem', border: '1.5px solid #dee2e6' }}
+                                            value={title} 
+                                            onChange={(e) => setTitle(e.target.value)} 
+                                            required 
+                                        />
+                                    </div>
+                                </div>
 
-                            {/* Question Details Field Group */}
-                            <div className="mb-4">
-                                <label className="form-label fw-semibold text-secondary">
-                                    <i className="bi bi-file-text me-2"></i>Detailed Question Description
-                                </label>
-                                <textarea 
-                                    className="form-control form-control-lg shadow-none"
-                                    placeholder="Describe your error, what you tried, and paste relevant code snippets here..." 
-                                    style={{ border: '2px solid #eaecf0', borderRadius: '12px', minHeight: '300px', fontSize: '1rem' }}
-                                    value={body} 
-                                    onChange={(e) => setBody(e.target.value)} 
-                                    required 
-                                />
-                            </div>
+                                {/* Modern Description Editor Area */}
+                                <div className="mb-4">
+                                    <label className="form-label small fw-bold text-uppercase text-primary tracking-wider">Description</label>
+                                    <textarea 
+                                        className="form-control shadow-none"
+                                        placeholder="Describe your problem, what you've tried, and any code snippets..." 
+                                        style={{ 
+                                            border: '1.5px solid #dee2e6', 
+                                            borderRadius: '16px', 
+                                            minHeight: '280px', 
+                                            padding: '1.2rem',
+                                            backgroundColor: '#fcfcfc'
+                                        }}
+                                        value={body} 
+                                        onChange={(e) => setBody(e.target.value)} 
+                                        required 
+                                    />
+                                </div>
 
-                            {/* Tags Field Group */}
-                            <div className="mb-5">
-                                <label className="form-label fw-semibold text-secondary">
-                                    <i className="bi bi-hash me-2"></i>Tags
-                                </label>
-                                <input 
-                                    className="form-control form-control-lg shadow-none"
-                                    placeholder="reactjs, nodejs, forms, validation" 
-                                    style={{ border: '2px solid #eaecf0', borderRadius: '12px', fontSize: '1rem' }}
-                                    value={tags} 
-                                    onChange={(e) => setTags(e.target.value)} 
-                                />
-                                <small className="text-muted ms-2">Separate multiple tags with a comma (,).</small>
-                            </div>
+                                {/* Tags Input with Icon */}
+                                <div className="mb-5">
+                                    <label className="form-label small fw-bold text-uppercase text-primary tracking-wider">Tags</label>
+                                    <div className="input-group">
+                                        <span className="input-group-text bg-white border-end-0" style={{ borderRadius: '12px 0 0 12px' }}>
+                                            <i className="bi bi-hash text-muted"></i>
+                                        </span>
+                                        <input 
+                                            className="form-control form-control-lg border-start-0 ps-0"
+                                            placeholder="reactjs, nodejs, typescript..." 
+                                            style={{ borderRadius: '0 12px 12px 0', fontSize: '1rem', border: '1.5px solid #dee2e6' }}
+                                            value={tags} 
+                                            onChange={(e) => setTags(e.target.value)} 
+                                        />
+                                    </div>
+                                </div>
 
-                            {/* Advance English Action Buttons */}
-                            <div className="d-grid gap-3 d-sm-flex justify-content-sm-end">
-                                <button type="button" className="btn btn-outline-secondary btn-lg fw-medium" style={{ borderRadius: '12px' }} onClick={() => navigate('/dashboard')}>
-                                    Cancel
-                                </button>
-                                <button type="submit" className="btn btn-primary btn-lg fw-bold shadow-sm" style={{ borderRadius: '12px', paddingLeft: '40px', paddingRight: '40px' }}>
-                                    Post Your Question <i className="bi bi-send-fill ms-2"></i>
-                                </button>
-                            </div>
-                        </form>
+                                {/* Actions with Gradient Button */}
+                                <div className="d-flex align-items-center justify-content-between pt-3 border-top mt-4">
+                                    <button type="button" className="btn btn-link text-muted text-decoration-none fw-bold" onClick={() => navigate('/dashboard')}>
+                                        Discard Draft
+                                    </button>
+                                    <button type="submit" className="btn btn-lg px-5 py-3 text-white fw-bold shadow" style={{ 
+                                        background: 'linear-gradient(45deg, #0d6efd, #00d2ff)',
+                                        border: 'none',
+                                        borderRadius: '14px'
+                                    }}>
+                                        Post Question <i className="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
+
+                    {/* Pro Tip Section */}
+                    <div className="mt-4 text-center">
+                        <span className="badge rounded-pill bg-white text-dark shadow-sm px-3 py-2 border text-uppercase" style={{ fontSize: '0.7rem' }}>
+                            💡 Pro Tip: Better tags get faster answers
+                        </span>
+                    </div>
+
                 </div>
             </div>
         </div>
