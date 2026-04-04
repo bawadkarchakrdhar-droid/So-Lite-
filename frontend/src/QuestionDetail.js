@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const QuestionDetail = () => {
     const { id } = useParams();
-    const [questions, setQuestion] = useState(null);
+    const [question, setQuestion] = useState(null);
     const [answers, setAnswers] = useState([]);
     const [ansBody, setAnsBody] = useState('');
 
@@ -27,7 +27,7 @@ const QuestionDetail = () => {
     const handleAns = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('https://so-lite-backend.onrender.com/api/answers', {
+            await axios.post('https://so-lite-backend.onrender.com/api/answer', {
                 answerBody: ansBody,
                 userId: localStorage.getItem('userId'),
                 questionId: id
