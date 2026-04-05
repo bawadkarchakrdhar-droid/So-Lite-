@@ -11,10 +11,9 @@ const QuestionDetail = () => {
 
     const loadData = async () => {
         try {
-            // Sahi endpoint check karein: /api/questions/${id}
+            // Aapka working logic
             const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             setQuestion(res.data);
-            // Answers agar array mein hain toh set honge
             setAnswers(res.data.answers || []); 
             setLoading(false);
         } catch (err) {
@@ -29,11 +28,9 @@ const QuestionDetail = () => {
 
     const handleAns = async (e) => {
         e.preventDefault();
-        if (!ansBody.trim()) return;
-
         try {
-            const userId = localStorage.getItem('userId') || 'Anonymous';
-            // POST call check karein: /api/answer
+            const userId = localStorage.getItem('userId');
+            // Aapka working POST call
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
                 answerBody: ansBody,
                 userId: userId,
@@ -51,57 +48,82 @@ const QuestionDetail = () => {
     if (!question) return <div className="container mt-5"><h3>Question nahi mila! ❌</h3></div>;
 
     return (
-        <div className="container-fluid px-md-5 py-4">
-            <div className="row justify-content-center">
-                <div className="col-12 col-lg-10">
-                    {/* Question Section */}
-                    <div className="border-bottom pb-4 mb-4">
-                        <h1 className="fw-bold text-dark mb-3">{question.title}</h1>
-                        <p className="fs-5 text-secondary" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
-                            {question.description}
-                        </p>
+        <div className="container mt-5 mb-5">
+            {/* Question Header Section */}
+            <div className="pb-3 mb-4 border-bottom">
+                <h1 className="display-6 fw-bold text-dark">{question.title}</h1>
+                <div className="d-flex text-muted small gap-3 mt-2">
+                    <span>Asked: Today</span>
+                    <span>Modified: Today</span>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-lg-9">
+                    {/* Question Description */}
+                    <div className="fs-5 mb-5" style={{ whiteSpace: 'pre-wrap', color: '#232629', lineHeight: '1.6' }}>
+                        {question.description}
                     </div>
 
-                    {/* Answers List */}
-                    <div className="mb-5">
-                        <h4 className="fw-bold mb-4">{answers.length} Answers</h4>
+                    {/* Answers Section */}
+                    <div className="mt-5">
+                        <h4 className="fw-normal border-bottom pb-3 mb-4">{answers.length} Answers</h4>
                         {answers.map((ans, i) => (
-                            <div key={i} className="card mb-3 shadow-sm border-0 bg-light p-3">
-                                <div className="card-body p-2">
-                                    <p className="fs-6 mb-2">
-                                        {ans.answerBody || "Data error: Field mismatch"}
-                                    </p>
-                                    <small className="text-muted">
-                                        Posted on: {ans.createdAt ? new Date(ans.createdAt).toLocaleDateString() : 'Today'}
-                                    </small>
-                                </div>
+                            <div key={i} className="py-3 border-bottom">
+                                <p className="mb-2" style={{ fontSize: '16px' }}>
+                                    {ans.answerBody || "Data error: Field mismatch"}
+                                </p>
+                                <small className="text-primary">Posted on: {new Date(ans.createdAt).toLocaleDateString()}</small>
                             </div>
                         ))}
                     </div>
 
-                    {/* Full-Width Answer Box */}
-                    <div className="mt-5 pt-4 border-top">
-                        <h3 className="fw-bold mb-4">Tera Answer Likho</h3>
+                    {/* STACK OVERFLOW STYLE ANSWER BOX */}
+                    <div className="mt-5">
+                        <h3 className="fw-bold mb-4">Your Answer</h3>
                         <form onSubmit={handleAns}>
-                            <div className="card shadow-sm border mb-3">
-                                <div className="bg-light border-bottom p-2 px-3 text-muted">
-                                    <i className="bi bi-type-bold me-3"></i>
-                                    <i className="bi bi-type-italic me-3"></i>
-                                    <i className="bi bi-code-slash"></i>
+                            <div className="card shadow-sm border" style={{ borderRadius: '4px' }}>
+                                {/* Editor Toolbar Appearance */}
+                                <div className="bg-light border-bottom p-2 d-flex gap-3 px-3 text-muted">
+                                    <span className="fw-bold">B</span>
+                                    <span className="fst-italic">I</span>
+                                    <span>🔗</span>
+                                    <span>&lt;/&gt;</span>
+                                    <span>📷</span>
                                 </div>
                                 <textarea 
                                     className="form-control border-0 shadow-none" 
                                     value={ansBody} 
                                     onChange={(e) => setAnsBody(e.target.value)}
-                                    placeholder="Yahan detail mein likho..." 
-                                    style={{ minHeight: '300px', fontSize: '16px', padding: '20px' }}
+                                    placeholder="Write your technical solution here..." 
+                                    style={{ 
+                                        minHeight: '280px', 
+                                        fontSize: '15px', 
+                                        padding: '15px', 
+                                        width: '100%',
+                                        backgroundColor: '#fff'
+                                    }}
                                     required 
                                 />
                             </div>
-                            <button type="submit" className="btn btn-primary btn-lg px-5 fw-bold mt-2">
-                                Post Answer
-                            </button>
+                            <div className="mt-4">
+                                <button type="submit" className="btn btn-primary btn-lg px-4" style={{ borderRadius: '4px', fontWeight: '500' }}>
+                                    Post Your Answer
+                                </button>
+                            </div>
                         </form>
+                    </div>
+                </div>
+
+                {/* Sidebar Tips (Stack Overflow Look) */}
+                <div className="col-lg-3 d-none d-lg-block">
+                    <div className="card bg-warning bg-opacity-10 border-warning border-opacity-25 p-3">
+                        <h6 className="fw-bold">How to Answer</h6>
+                        <ul className="small ps-3 mb-0">
+                            <li>Explain why your solution works.</li>
+                            <li>Use code blocks for examples.</li>
+                            <li>Be polite and helpful.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
