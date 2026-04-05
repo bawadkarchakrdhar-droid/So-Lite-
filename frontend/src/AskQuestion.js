@@ -13,83 +13,66 @@ const AskQuestion = () => {
         try {
             await axios.post('https://so-lite-backend.onrender.com/api/questions', {
                 title,
-                description: body, // Backend variable mapping fixed
+                description: body, 
                 tags: tags.split(',').map(tag => tag.trim()), 
                 userId: localStorage.getItem('userId')
             });
-            alert("Success! Your programming question is live. 🚀");
+            alert("Sawal post ho gaya! 🚀");
             navigate('/dashboard');
         } catch (err) {
-            console.error(err);
-            alert("Error: Connection failed!");
+            alert("Error: Connection check karein!");
         }
     };
 
     return (
-        <div className="container-fluid py-5" style={{ 
-            background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', 
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center'
-        }}>
-            <div className="row justify-content-center w-100">
-                <div className="col-lg-7 col-md-10">
-                    
-                    {/* Header Section - Modern Spacing */}
-                    <div className="text-center mb-5 mt-3">
-                        <h1 className="display-6 fw-bold text-dark mb-2" style={{ letterSpacing: '-1.5px' }}>
-                            Ask a Public Question
-                        </h1>
-                        <p className="text-muted fs-5 mx-auto" style={{ maxWidth: '650px' }}>
-                            Describe your technical challenge with precision and get expert community solutions.
-                        </p>
-                    </div>
+        <div style={{ backgroundColor: '#f8f9f9', minHeight: '100vh', padding: '40px 20px' }}>
+            <div className="container" style={{ maxWidth: '1200px' }}>
+                
+                {/* Header Section */}
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h1 className="fw-bold fs-3">Ask a public question</h1>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Stack_Overflow_icon.svg" alt="SO" width="50" />
+                </div>
 
-                    {/* Premium Glassmorphic Form Card */}
-                    <div className="card border-0 shadow-lg overflow-hidden" style={{ 
-                        borderRadius: '24px', 
-                        backdropFilter: 'blur(15px)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        border: '1px solid rgba(255,255,255,0.3)'
-                    }}>
-                        <div className="card-body p-4 p-md-5">
+                <div className="row">
+                    <div className="col-lg-8">
+                        {/* Main Form Card */}
+                        <div className="card shadow-sm border p-4 mb-4" style={{ borderRadius: '4px' }}>
                             <form onSubmit={handleSubmit}>
                                 
-                                {/* Floating Title Input */}
+                                {/* Title Section */}
                                 <div className="mb-4">
-                                    <label className="form-label small fw-bold text-uppercase text-primary tracking-wider mb-2">
-                                        <i className="bi bi-lightning me-1"></i>Title
-                                    </label>
+                                    <label className="form-label fw-bold mb-0">Title</label>
+                                    <p className="text-muted small mb-2">Be specific and imagine you’re asking a question to another person.</p>
                                     <input 
-                                        className="form-control form-control-lg shadow-none"
-                                        placeholder="What's your programming question? Be specific (e.g., 'React forms with custom hooks')" 
-                                        style={{ 
-                                            borderRadius: '12px', 
-                                            fontSize: '1.05rem', 
-                                            border: '1.5px solid #dee2e6', 
-                                            padding: '1rem' 
-                                        }}
+                                        className="form-control form-control-sm"
+                                        placeholder="e.g. Is there an R function for finding the index of an element in a vector?" 
+                                        style={{ borderColor: '#babfc4', padding: '10px' }}
                                         value={title} 
                                         onChange={(e) => setTitle(e.target.value)} 
                                         required 
                                     />
                                 </div>
 
-                                {/* Modern Description Editor Area */}
+                                {/* Body/Description Section with Toolbar placeholder */}
                                 <div className="mb-4">
-                                    <label className="form-label small fw-bold text-uppercase text-primary tracking-wider mb-2">
-                                        <i className="bi bi-file-text me-1"></i>Detailed Description
-                                    </label>
+                                    <label className="form-label fw-bold mb-0">Body</label>
+                                    <p className="text-muted small mb-2">Include all the information someone would need to answer your question.</p>
+                                    
+                                    {/* Mock Toolbar to match screenshot */}
+                                    <div className="border border-bottom-0 p-2 d-flex gap-3 bg-light" style={{ borderColor: '#babfc4' }}>
+                                        <i className="bi bi-type-bold"></i> <i className="bi bi-type-italic"></i>
+                                        <i className="bi bi-link-45deg"></i> <i className="bi bi-code-slash"></i>
+                                        <i className="bi bi-image"></i> <i className="bi bi-list-ol"></i>
+                                    </div>
+                                    
                                     <textarea 
-                                        className="form-control shadow-none"
-                                        placeholder="Describe your problem, include error messages, and paste code snippets..." 
+                                        className="form-control"
                                         style={{ 
-                                            border: '1.5px solid #dee2e6', 
-                                            borderRadius: '16px', 
-                                            minHeight: '320px', 
-                                            padding: '1.2rem',
-                                            backgroundColor: '#fcfcfc',
-                                            fontSize: '1rem'
+                                            borderColor: '#babfc4', 
+                                            minHeight: '300px', 
+                                            borderRadius: '0 0 4px 4px',
+                                            padding: '15px'
                                         }}
                                         value={body} 
                                         onChange={(e) => setBody(e.target.value)} 
@@ -97,45 +80,41 @@ const AskQuestion = () => {
                                     />
                                 </div>
 
-                                {/* Tags Input */}
-                                <div className="mb-5">
-                                    <label className="form-label small fw-bold text-uppercase text-primary tracking-wider mb-2">
-                                        <i className="bi bi-tags me-1"></i>Tags (comma-separated)
-                                    </label>
+                                {/* Tags Section */}
+                                <div className="mb-4">
+                                    <label className="form-label fw-bold mb-0">Tags</label>
+                                    <p className="text-muted small mb-2">Add up to 5 tags to describe what your question is about.</p>
                                     <input 
-                                        className="form-control form-control-lg shadow-none"
-                                        placeholder="reactjs, nodejs, mongodb..." 
-                                        style={{ borderRadius: '12px', fontSize: '1.05rem', border: '1.5px solid #dee2e6', padding: '1rem' }}
+                                        className="form-control"
+                                        placeholder="e.g. (ajax django reactjs)" 
+                                        style={{ borderColor: '#babfc4', padding: '10px' }}
                                         value={tags} 
                                         onChange={(e) => setTags(e.target.value)} 
                                     />
                                 </div>
 
-                                {/* Advance Actions with Full-Width Button */}
-                                <div className="d-grid gap-3 pt-3 border-top mt-4">
-                                    <button type="submit" className="btn btn-lg px-5 py-3 text-white fw-bold shadow" style={{ 
-                                        background: 'linear-gradient(45deg, #0d6efd, #00d2ff)',
-                                        border: 'none',
-                                        borderRadius: '16px',
-                                        fontSize: '1.1rem'
-                                    }}>
-                                        Post Your Question <i className="bi bi-send-fill ms-2"></i>
-                                    </button>
-                                    <button type="button" className="btn btn-link text-muted text-decoration-none fw-medium" onClick={() => navigate('/dashboard')}>
-                                        Discard Draft
-                                    </button>
-                                </div>
+                                <button type="submit" className="btn btn-primary fw-bold px-4" style={{ backgroundColor: '#0a95ff', border: 'none' }}>
+                                    Post your question
+                                </button>
                             </form>
                         </div>
                     </div>
 
-                    {/* Pro Tip - Premium Badge */}
-                    <div className="mt-4 text-center">
-                        <span className="badge rounded-pill bg-white text-dark shadow-sm px-4 py-2 border text-uppercase" style={{ fontSize: '0.75rem', fontWeight: '600' }}>
-                            💡 Pro Tip: Detailed questions get better answers
-                        </span>
+                    {/* Right Side Sidebar (Optional Tips) */}
+                    <div className="col-lg-4">
+                        <div className="card shadow-sm border">
+                            <div className="card-header bg-light fw-bold border-bottom">Step 1: Draft your question</div>
+                            <div className="card-body small">
+                                <p>The community is here to help you with specific coding, algorithm, or language problems.</p>
+                                <hr />
+                                <ul className="ps-3 mb-0">
+                                    <li>Summarize the problem</li>
+                                    <li>Describe what you've tried</li>
+                                    <li>Show some code</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
