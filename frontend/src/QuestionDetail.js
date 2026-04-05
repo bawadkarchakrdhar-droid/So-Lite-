@@ -7,122 +7,129 @@ const QuestionDetail = () => {
     const [question, setQuestion] = useState(null);
     const [answers, setAnswers] = useState([]);
     const [answerText, setAnswerText] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [isFetching, setIsFetching] = useState(true);
 
-    // Backend URL Variable
-    const API_BASE_URL = "https://so-lite-backend.onrender.com/api";
+    // API URL
+    const API_URL = "https://so-lite-backend.onrender.com/api";
 
     useEffect(() => {
-        const fetchDetails = async () => {
+        const loadData = async () => {
             try {
-                // Mapping calls to fetch question and existing answers
-                const qRes = await axios.get(`${API_BASE_URL}/questions/${id}`);
+                // Sahi mapping answers aur question fetch karne ke liye
+                const qRes = await axios.get(`${API_URL}/questions/${id}`);
                 setQuestion(qRes.data);
-                
-                const aRes = await axios.get(`${API_BASE_URL}/answers/${id}`);
-                setAnswers(aRes.data || []); 
-                setLoading(false);
+                const aRes = await axios.get(`${API_URL}/answers/${id}`);
+                setAnswers(aRes.data || []);
+                setIsFetching(false);
             } catch (err) {
-                console.error("Fetch Error:", err);
-                setLoading(false);
+                console.error("Connection error:", err);
+                setIsFetching(false);
             }
         };
-        fetchDetails();
+        loadData();
     }, [id]);
 
-    const handlePostAnswer = async (e) => {
+    const handlePost = async (e) => {
         e.preventDefault();
-        if (!answerText.trim()) return alert("Pehle answer likhein!");
+        if (!answerText.trim()) return alert("Pehle kuch likho bhai!");
 
         try {
-            // Posting new answer to backend mapping
-            await axios.post(`${API_BASE_URL}/answers`, {
+            await axios.post(`${API_URL}/answers`, {
                 questionId: id,
                 text: answerText,
-                userId: localStorage.getItem('userId') || 'User_Guest'
+                userId: localStorage.getItem('userId') || 'Guest_User'
             });
             alert("Answer post ho gaya! 🚀");
             setAnswerText('');
             window.location.reload(); 
         } catch (err) {
-            // Updated error message for clarity
-            alert("Error: Backend se connection nahi ho pa raha. Kripya Render dashboard check karein.");
+            // Render spin-down error handle karne ke liye message
+            alert("Backend abhi jag raha hai (Render Sleep). Ek baar refresh karke 30 second baad try karein.");
         }
     };
 
-    if (loading) return <div className="container mt-5 text-center"><h3>Loading...</h3></div>;
-    if (!question) return <div className="container mt-5">Question nahi mila!</div>;
+    if (isFetching) return <div className="container mt-5 text-center"><h4>Backend jag raha hai... Sabr rakhein ⏳</h4></div>;
+    if (!question) return <div className="container mt-5">Sawal nahi mila!</div>;
 
     return (
-        <div className="container py-5">
+        <div className="container-fluid px-md-5 py-4">
             <div className="row justify-content-center">
                 <div className="col-12 col-xl-10">
                     
-                    {/* Question Section */}
-                    <div className="pb-4 border-bottom mb-5">
-                        <h1 className="fw-bold text-dark mb-3" style={{ fontSize: '2rem' }}>{question.title}</h1>
-                        <p className="fs-5 text-muted" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
-                            {question.description}
-                        </p>
+                    {/* Header Section */}
+                    <div className="border-bottom pb-3 mb-4">
+                        <h1 className="fw-bold" style={{ fontSize: '1.8rem', color: '#232629' }}>{question.title}</h1>
+                        <div className="d-flex gap-3 text-muted small">
+                            <span>Asked: Today</span>
+                            <span>Viewed: 15 times</span>
+                        </div>
                     </div>
 
-                    {/* Answers Section */}
-                    <div className="mb-5">
-                        <h4 className="fw-bold mb-4">{answers.length} Answers</h4>
-                        {answers.length > 0 ? (
-                            answers.map((ans, index) => (
-                                <div key={index} className="card shadow-sm border-0 mb-4 bg-light">
-                                    <div className="card-body p-4">
-                                        <p className="mb-0" style={{ fontSize: '1.05rem' }}>{ans.text}</p>
-                                        <hr className="my-3 opacity-25" />
-                                        <small className="text-primary fw-bold">Answered by: User_{ans.userId?.slice(-4)}</small>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-muted italic">Abhi tak koi answer nahi hai. Pehla answer aap likhein!</p>
-                        )}
-                    </div>
-
-                    {/* PREMIUM FULL-WIDTH ANSWER BOX */}
-                    <div className="mt-5 pt-4 border-top">
-                        <h3 className="fw-bold mb-4">Your Answer</h3>
-                        
-                        <div className="card shadow border-0 overflow-hidden" style={{ borderRadius: '12px' }}>
-                            {/* Toolbar */}
-                            <div className="bg-light border-bottom p-3 d-flex gap-4">
-                                <i className="bi bi-type-bold fs-5"></i>
-                                <i className="bi bi-type-italic fs-5"></i>
-                                <i className="bi bi-code-slash fs-5"></i>
-                                <i className="bi bi-link-45deg fs-5"></i>
-                                <i className="bi bi-list-ul fs-5"></i>
+                    <div className="row">
+                        <div className="col-lg-9">
+                            {/* Question Content */}
+                            <div className="fs-5 mb-5" style={{ lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>
+                                {question.description}
                             </div>
 
-                            {/* Full Width Textarea */}
-                            <textarea 
-                                className="form-control border-0 shadow-none"
-                                placeholder="Apna technical solution yahan vistaar se likhein..." 
-                                style={{ 
-                                    minHeight: '350px', 
-                                    padding: '25px', 
-                                    fontSize: '16px',
-                                    width: '100%', 
-                                    backgroundColor: '#fff',
-                                    resize: 'vertical'
-                                }}
-                                value={answerText} 
-                                onChange={(e) => setAnswerText(e.target.value)} 
-                            />
+                            {/* Answers Section */}
+                            <div className="mt-5">
+                                <h3 className="border-bottom pb-3 mb-4">{answers.length} Answers</h3>
+                                {answers.map((ans, i) => (
+                                    <div key={i} className="card shadow-sm border-0 mb-4 bg-light">
+                                        <div className="card-body p-4">
+                                            <p className="mb-0" style={{ fontSize: '1.1rem' }}>{ans.text}</p>
+                                            <div className="text-end mt-2 small text-primary">
+                                                — User_{ans.userId?.slice(-4)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* PREMIUM FULL-WIDTH BOX */}
+                            <div className="mt-5 pt-4 border-top">
+                                <h3 className="fw-bold mb-4">Your Answer</h3>
+                                <div className="card shadow border-0" style={{ borderRadius: '8px' }}>
+                                    {/* Mock Toolbar */}
+                                    <div className="bg-light border-bottom p-2 px-3 d-flex gap-4" style={{ color: '#525960' }}>
+                                        <i className="bi bi-type-bold"></i>
+                                        <i className="bi bi-type-italic"></i>
+                                        <i className="bi bi-code-slash"></i>
+                                        <i className="bi bi-link-45deg"></i>
+                                        <i className="bi bi-image"></i>
+                                    </div>
+                                    <textarea 
+                                        className="form-control border-0 shadow-none"
+                                        placeholder="Apna solution yahan poori detail mein likhein..."
+                                        style={{ 
+                                            minHeight: '350px', 
+                                            fontSize: '16px', 
+                                            padding: '20px',
+                                            width: '100%', // Full-screen fix
+                                            resize: 'vertical'
+                                        }}
+                                        value={answerText}
+                                        onChange={(e) => setAnswerText(e.target.value)}
+                                    />
+                                </div>
+                                <button className="btn btn-primary btn-lg mt-4 px-5 fw-bold" 
+                                        style={{ backgroundColor: '#0a95ff', border: 'none' }}
+                                        onClick={handlePost}>
+                                    Post Your Answer
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="mt-4">
-                            <button 
-                                className="btn btn-primary btn-lg px-5 py-3 fw-bold shadow-sm"
-                                style={{ backgroundColor: '#0a95ff', border: 'none', borderRadius: '6px' }}
-                                onClick={handlePostAnswer}
-                            >
-                                Post Your Answer
-                            </button>
+                        {/* Sidebar Tips */}
+                        <div className="col-lg-3 d-none d-lg-block">
+                            <div className="card border-warning bg-light shadow-sm">
+                                <div className="card-body small">
+                                    <h6 className="fw-bold">How to Answer</h6>
+                                    <p className="mb-1 text-muted">Explain **why** this solution is the best.</p>
+                                    <p className="mb-0 text-muted">Share your research and code snippets.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
