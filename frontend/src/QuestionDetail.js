@@ -9,21 +9,19 @@ const QuestionDetail = () => {
     const [answerText, setAnswerText] = useState('');
     const [loading, setLoading] = useState(true);
 
-    // BHAU, YE URL DHAYAN SE DEKHO - /api lagana zaroori hai
-    const API_BASE_URL = "https://so-lite-backend.onrender.com/api";
+    const API_BASE = "https://so-lite-backend.onrender.com/api";
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                // Correct Endpoint Mapping
-                const qRes = await axios.get(`${API_BASE_URL}/questions/${id}`);
+                // Fetching question and answers separately
+                const qRes = await axios.get(`${API_BASE}/questions/${id}`);
                 setQuestion(qRes.data);
-                
-                const aRes = await axios.get(`${API_BASE_URL}/answers/${id}`);
+                const aRes = await axios.get(`${API_BASE}/answers/${id}`);
                 setAnswers(aRes.data || []);
                 setLoading(false);
             } catch (err) {
-                console.error("404 ya Connection Error:", err);
+                console.error("Fetch error:", err);
                 setLoading(false);
             }
         };
@@ -32,19 +30,19 @@ const QuestionDetail = () => {
 
     const handlePostAnswer = async (e) => {
         e.preventDefault();
-        if (!answerText.trim()) return alert("Write something!");
+        if (!answerText.trim()) return alert("Please write an answer!");
 
         try {
-            await axios.post(`${API_BASE_URL}/answers`, {
+            await axios.post(`${API_BASE}/answers`, {
                 questionId: id,
                 text: answerText,
-                userId: localStorage.getItem('userId') || 'Anonymous'
+                userId: localStorage.getItem('userId') || 'User123'
             });
             alert("Answer posted! 🚀");
             setAnswerText('');
             window.location.reload(); 
         } catch (err) {
-            alert("Error posting answer. Backend routes check karein.");
+            alert("Error: Connection failed! Backend check karein.");
         }
     };
 
@@ -52,17 +50,14 @@ const QuestionDetail = () => {
     if (!question) return <div className="container mt-5">Question not found.</div>;
 
     return (
-        <div className="container py-5">
+        <div className="container-fluid px-md-5 py-5">
             <div className="row justify-content-center">
-                <div className="col-12 col-lg-10">
-                    
-                    {/* Question Section */}
-                    <div className="pb-4 border-bottom mb-5">
+                <div className="col-12 col-xl-10">
+                    <div className="border-bottom pb-4 mb-5">
                         <h1 className="fw-bold">{question.title}</h1>
-                        <p className="fs-5 text-muted" style={{ whiteSpace: 'pre-wrap' }}>{question.description}</p>
+                        <p className="fs-5 text-secondary" style={{ whiteSpace: 'pre-wrap' }}>{question.description}</p>
                     </div>
 
-                    {/* Answers List Section */}
                     <div className="mb-5">
                         <h4 className="fw-bold mb-4">{answers.length} Answers</h4>
                         {answers.map((ans, index) => (
@@ -72,25 +67,22 @@ const QuestionDetail = () => {
                         ))}
                     </div>
 
-                    {/* FULL WIDTH PREMIUM ANSWER BOX */}
                     <div className="mt-5 pt-4 border-top">
                         <h3 className="fw-bold mb-4">Your Answer</h3>
-                        <div className="card shadow border-0" style={{ borderRadius: '8px', overflow: 'hidden' }}>
-                            <div className="bg-light border-bottom p-2 d-flex gap-3 px-3">
+                        <div className="card shadow border-0" style={{ borderRadius: '8px' }}>
+                            <div className="bg-light border-bottom p-2 px-3 d-flex gap-4">
                                 <i className="bi bi-type-bold"></i><i className="bi bi-type-italic"></i>
                                 <i className="bi bi-code-slash"></i><i className="bi bi-link-45deg"></i>
                             </div>
                             <textarea 
                                 className="form-control border-0 shadow-none"
-                                placeholder="Write your technical solution here..." 
-                                style={{ minHeight: '300px', padding: '20px', fontSize: '16px', width: '100%' }}
-                                value={answerText} 
-                                onChange={(e) => setAnswerText(e.target.value)} 
+                                placeholder="Write your technical solution here..."
+                                style={{ minHeight: '300px', fontSize: '16px', padding: '20px', width: '100%' }} // Full width fix
+                                value={answerText}
+                                onChange={(e) => setAnswerText(e.target.value)}
                             />
                         </div>
-                        <button className="btn btn-primary btn-lg mt-4 px-5 fw-bold" 
-                                style={{ backgroundColor: '#0a95ff', border: 'none' }}
-                                onClick={handlePostAnswer}>
+                        <button className="btn btn-primary btn-lg mt-4 px-5 fw-bold" onClick={handlePostAnswer}>
                             Post Your Answer
                         </button>
                     </div>
