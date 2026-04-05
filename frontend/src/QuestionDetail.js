@@ -9,79 +9,70 @@ const QuestionDetail = () => {
     const [answerText, setAnswerText] = useState('');
     const [loading, setLoading] = useState(true);
 
-    const API_URL = "https://so-lite-backend.onrender.com/api";
+    const API_BASE = "https://so-lite-backend.onrender.com/api";
 
     useEffect(() => {
-        const loadPage = async () => {
+        const fetchAll = async () => {
             try {
-                const qRes = await axios.get(`${API_URL}/questions/${id}`);
+                const qRes = await axios.get(`${API_BASE}/questions/${id}`);
                 setQuestion(qRes.data);
-                const aRes = await axios.get(`${API_URL}/answers/${id}`);
+                const aRes = await axios.get(`${API_BASE}/answers/${id}`);
                 setAnswers(aRes.data || []);
                 setLoading(false);
             } catch (err) {
-                console.error(err);
+                console.error("Fetch failed", err);
                 setLoading(false);
             }
         };
-        loadPage();
+        fetchAll();
     }, [id]);
 
-    const handlePost = async (e) => {
+    const handleAnswer = async (e) => {
         e.preventDefault();
-        if (!answerText.trim()) return alert("Write something!");
+        if (!answerText.trim()) return;
         try {
-            await axios.post(`${API_URL}/answers`, {
+            await axios.post(`${API_BASE}/answers`, {
                 questionId: id,
                 text: answerText,
-                userId: localStorage.getItem('userId') || 'User123'
+                userId: 'User123'
             });
             alert("Answer posted!");
             setAnswerText('');
             window.location.reload();
         } catch (err) {
-            alert("Error: Connection failed! Render check karein.");
+            alert("Error: Backend se connect nahi ho raha.");
         }
     };
 
-    if (loading) return <div className="text-center mt-5"><h3>Loading...</h3></div>;
-    if (!question) return <div className="container mt-5">Sawal nahi mila!</div>;
+    if (loading) return <div className="text-center mt-5">Loading...</div>;
 
     return (
-        <div className="container-fluid px-md-5 py-4">
-            <div className="row justify-content-center">
-                <div className="col-12 col-xl-10">
-                    <div className="border-bottom pb-4 mb-4">
-                        <h1 className="fw-bold mb-3" style={{ color: '#232629' }}>{question.title}</h1>
-                        <p className="fs-5" style={{ whiteSpace: 'pre-wrap', color: '#3b4045' }}>{question.description}</p>
-                    </div>
-
-                    <div className="mb-5">
-                        <h3 className="mb-4">{answers.length} Answers</h3>
-                        {answers.map((ans, i) => (
-                            <div key={i} className="card shadow-sm border-0 mb-3 bg-light p-4">
-                                <p className="mb-0 fs-6">{ans.text}</p>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="mt-5 pt-4 border-top">
-                        <h3 className="fw-bold mb-4">Your Answer</h3>
-                        <div className="card shadow-sm border" style={{ borderRadius: '6px' }}>
-                            <div className="bg-light border-bottom p-2 d-flex gap-4 px-3 text-muted">
-                                <i className="bi bi-type-bold"></i><i className="bi bi-type-italic"></i><i className="bi bi-code-slash"></i>
-                            </div>
-                            <textarea 
-                                className="form-control border-0 shadow-none"
-                                placeholder="Share your knowledge..."
-                                style={{ minHeight: '300px', width: '100%', padding: '20px', fontSize: '16px' }} // Full width fix
-                                value={answerText}
-                                onChange={(e) => setAnswerText(e.target.value)}
-                            />
-                        </div>
-                        <button className="btn btn-primary btn-lg mt-4 px-5 fw-bold" onClick={handlePost}>Post Your Answer</button>
-                    </div>
+        <div className="container mt-5">
+            {question && (
+                <div className="border-bottom pb-4 mb-5">
+                    <h1 className="fw-bold">{question.title}</h1>
+                    <p className="fs-5 text-muted">{question.description}</p>
                 </div>
+            )}
+
+            <div className="mb-5">
+                <h4>{answers.length} Answers</h4>
+                {answers.map((ans, i) => (
+                    <div key={i} className="card p-3 mb-2 bg-white shadow-sm border-0">{ans.text}</div>
+                ))}
+            </div>
+
+            <div className="mt-5">
+                <h3 className="fw-bold mb-3">Your Answer</h3>
+                <textarea 
+                    className="form-control mb-3" 
+                    rows="8" 
+                    style={{ width: '100%', padding: '15px' }} 
+                    placeholder="Write your technical solution..."
+                    value={answerText}
+                    onChange={(e) => setAnswerText(e.target.value)}
+                />
+                <button className="btn btn-primary btn-lg" onClick={handleAnswer}>Post Answer</button>
             </div>
         </div>
     );
