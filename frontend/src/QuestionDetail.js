@@ -1,27 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const QuestionDetail = () => {
     const { id } = useParams();
     const [question, setQuestion] = useState(null);
-    const [answers, setAnswers] = useState([]); // Array to store fetched answers
+    const [answers, setAnswers] = useState([]);
     const [answerText, setAnswerText] = useState('');
-    const navigate = useNavigate();
 
     useEffect(() => {
-        // Bhai, yahan purane answers aur question fetch kar rahe hain
         const fetchDetails = async () => {
             try {
-                // Fetching Question Details mapping
+                // Backend calls check karein
                 const qRes = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
                 setQuestion(qRes.data);
-                
-                // Fetching Answers mapping associated with this question
                 const aRes = await axios.get(`https://so-lite-backend.onrender.com/api/answers/${id}`);
-                setAnswers(aRes.data); // Pure answers state mein set kiye
+                setAnswers(aRes.data); // Answers wapas lane ke liye
             } catch (err) {
-                console.error("Data fetching error:", err);
+                console.error("Fetch error:", err);
             }
         };
         fetchDetails();
@@ -29,110 +25,87 @@ const QuestionDetail = () => {
 
     const handlePostAnswer = async (e) => {
         e.preventDefault();
-        if (!answerText) return alert("Please write an answer first!");
+        if (!answerText.trim()) return alert("Please write an answer!");
 
         try {
-            // Posting new answer mapping
             await axios.post('https://so-lite-backend.onrender.com/api/answers', {
                 questionId: id,
                 text: answerText,
-                userId: localStorage.getItem('userId') || 'Anonymous'
+                userId: localStorage.getItem('userId') || 'User123'
             });
             alert("Answer posted! 🚀");
             setAnswerText('');
-            window.location.reload(); // Refresh to see the new answer
+            window.location.reload(); 
         } catch (err) {
-            console.error(err);
-            alert("Error: Connection failed");
+            alert("Error: Connection failed! Backend check karein.");
         }
     };
 
-    if (!question) return <div className="container mt-5">Loading question...</div>;
+    if (!question) return <div className="container mt-5">Loading...</div>;
 
     return (
-        <div className="container mt-4 mb-5">
-            {/* Question Details Area */}
-            <div className="pb-3 border-bottom mb-4">
-                <h1 className="fw-bold text-dark mb-1">{question.title}</h1>
-                <div className="d-flex text-muted small gap-3">
-                    <span>Asked <span className="text-dark">today</span></span>
-                    <span>Viewed <span className="text-dark">12 times</span></span>
-                </div>
-            </div>
-
-            <div className="row">
-                <div className="col-lg-8 col-md-10 mx-auto">
-                    {/* The Question Body */}
-                    <div className="question-body pb-5" style={{ fontSize: '1.1rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
-                        {question.description}
+        <div className="container mt-5 mb-5">
+            <div className="row justify-content-center">
+                <div className="col-12 col-lg-10">
+                    
+                    {/* Question Section */}
+                    <div className="border-bottom pb-4 mb-5">
+                        <h1 className="fw-bold display-6 mb-3">{question.title}</h1>
+                        <p className="fs-5 text-secondary" style={{ whiteSpace: 'pre-wrap' }}>
+                            {question.description}
+                        </p>
                     </div>
 
-                    {/* Bhai, yahan purane answers wapas aayenge */}
-                    <div className="answers-section mt-5">
-                        <h4 className="border-bottom pb-3 mb-4">{answers.length} Answers</h4>
+                    {/* Answers List Section */}
+                    <div className="mb-5">
+                        <h4 className="fw-bold mb-4">{answers.length} Answers</h4>
                         {answers.map((ans, index) => (
-                            <div key={index} className="border-bottom pb-4 mb-4">
-                                <p style={{ fontSize: '1rem', lineHeight: '1.5' }}>{ans.text}</p>
-                                <div className="d-flex justify-content-end text-muted small">
-                                    answered 4/4/2026 by User_{ans.userId?.slice(-4)}
+                            <div key={index} className="card shadow-sm border-0 mb-3 bg-light">
+                                <div className="card-body">
+                                    <p className="mb-0">{ans.text}</p>
+                                    <small className="text-muted d-block mt-2">Posted on: 4/5/2026</small>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    {/* --- ADVANCED ANSWER BOX SECTION --- */}
+                    {/* PREMIUM FULL-WIDTH ANSWER BOX */}
                     <div className="mt-5 pt-4 border-top">
-                        <h4 className="fw-bold mb-3" style={{ fontSize: '1.3rem' }}>Your Answer</h4>
+                        <h3 className="fw-bold mb-4">Your Answer</h3>
                         
-                        {/* Container card with modern styling */}
-                        <div className="card shadow border-0 p-3 p-md-4" style={{ borderRadius: '15px' }}>
-                            {/* Editor Toolbar (Mock icons for style) */}
-                            <div className="d-flex gap-3 mb-3 pb-2 border-bottom" style={{ color: '#525960', fontSize: '1.1rem' }}>
-                                <i className="bi bi-type-bold mx-1"></i>
-                                <i className="bi bi-type-italic mx-1"></i>
-                                <div className="vr mx-2"></div>
-                                <i className="bi bi-link-45deg mx-1"></i>
-                                <i className="bi bi-code-slash mx-1"></i>
-                                <i className="bi bi-image mx-1"></i>
-                                <div className="vr mx-2"></div>
-                                <i className="bi bi-list-ol mx-1"></i>
-                                <i className="bi bi-list-ul mx-1"></i>
+                        <div className="card shadow-sm border" style={{ borderRadius: '8px', overflow: 'hidden' }}>
+                            {/* Toolbar */}
+                            <div className="bg-light border-bottom p-2 d-flex gap-3 px-3">
+                                <i className="bi bi-type-bold"></i>
+                                <i className="bi bi-type-italic"></i>
+                                <i className="bi bi-code-slash"></i>
+                                <i className="bi bi-link-45deg"></i>
                             </div>
 
-                            {/* Bhai, ye hai full-width advanced textarea */}
+                            {/* Full Screen Textarea */}
                             <textarea 
-                                className="form-control shadow-none border"
-                                placeholder="Apna detailed programming solution yahan paste karein..." 
+                                className="form-control border-0 shadow-none"
+                                placeholder="Write your technical solution here in detail..." 
                                 style={{ 
-                                    width: '100%', 
-                                    minHeight: '280px', 
-                                    padding: '1.2rem', 
-                                    fontSize: '15px', 
-                                    lineHeight: '1.5',
-                                    borderRadius: '12px',
-                                    backgroundColor: '#fff',
-                                    resize: 'none',
-                                    border: '1px solid #ced4da'
+                                    minHeight: '300px', 
+                                    padding: '20px', 
+                                    fontSize: '16px',
+                                    width: '100%' // Full screen width fix
                                 }}
                                 value={answerText} 
                                 onChange={(e) => setAnswerText(e.target.value)} 
                             />
                         </div>
 
-                        {/* Stack Overflow blue button */}
-                        <div className="d-grid gap-2 mt-4">
-                            <button 
-                                className="btn btn-primary fw-bold text-white shadow" 
-                                style={{ backgroundColor: '#0a95ff', border: '1px solid #0a95ff', borderRadius: '4px', fontSize: '14px', padding: '12px' }}
-                                onClick={handlePostAnswer}
-                            >
-                                Post Your Answer
-                            </button>
-                            <button type="button" className="btn btn-link text-decoration-none text-muted" onClick={() => navigate('/dashboard')}>
-                                Cancel
-                            </button>
-                        </div>
+                        <button 
+                            className="btn btn-primary btn-lg mt-4 px-5 fw-bold"
+                            style={{ backgroundColor: '#0a95ff', border: 'none', borderRadius: '4px' }}
+                            onClick={handlePostAnswer}
+                        >
+                            Post Your Answer
+                        </button>
                     </div>
+
                 </div>
             </div>
         </div>
