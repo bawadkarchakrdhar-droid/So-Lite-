@@ -5,6 +5,7 @@ import Login from './Login';
 import Dashboard from './Dashboard';
 import AskQuestion from './AskQuestion';
 import QuestionDetail from './QuestionDetail'; // Naya component
+import settings from './components/settings';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -21,6 +22,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/settings"element={<ProtectedRoute><setting /></ProtectedRoute>} />
           <Route path="/ask-question" element={<ProtectedRoute><AskQuestion /></ProtectedRoute>} />
           {/* Naya Dynamic Route */}
           <Route path="/question/:id" element={<ProtectedRoute><QuestionDetail /></ProtectedRoute>} />
