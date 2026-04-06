@@ -22,7 +22,7 @@ const AskQuestion = () => {
             navigate('/');
         } catch (err) {
             console.error(err);
-            alert("Question post nahi hua. Backend check karein.");
+            alert("Question not posted .");
         }
     };
 

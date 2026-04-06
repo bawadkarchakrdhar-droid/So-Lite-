@@ -1,29 +1,20 @@
 const mongoose = require('mongoose');
 
 const QuestionSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
     tags: [String],
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    // Missing field added for populate logic
-    answers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Answer'
-    }],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
+    userId: { type: String, required: true },
+    // Naya: User ka naam save karne ke liye
+    userName: { type: String, default: 'Anonymous User' }, 
+    answers: [
+        {
+            answerBody: String,
+            userId: String,
+            createdAt: { type: Date, default: Date.now }
+        }
+    ],
+    createdAt: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('Question', QuestionSchema);
