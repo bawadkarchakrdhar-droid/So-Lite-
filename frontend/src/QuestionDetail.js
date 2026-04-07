@@ -52,9 +52,10 @@ const QuestionDetail = () => {
 
             <div className="mt-5">
                 <h4 className="border-bottom pb-3 mb-4">{answers.length} Answers</h4>
+                console.log(Answers from backend:",answers);
                 {answers.map((ans, i) => (
                     <div key={i} className="py-3 border-bottom">
-                        <p>{ans.answerBody || "Data error: Field mismatch"}</p>
+                        <p>{ans.answerBody}</p>
                         <small className="text-muted">Posted on: {new Date(ans.createdAt).toLocaleDateString()}</small>
                     </div>
                 ))}
