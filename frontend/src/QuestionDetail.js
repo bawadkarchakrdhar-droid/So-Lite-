@@ -55,8 +55,8 @@ const QuestionDetail = () => {
                 console.log(Answers from backend:",answers);
                 {answers.map((ans, i) => (
                     <div key={i} className="py-3 border-bottom">
-                        <p>{ans.answerBody}</p>
-                        <small className="text-muted">Posted on: {new Date(ans.createdAt).toLocaleDateString()}</small>
+                        <p>{ans.body}</p>
+                        <small className="text-muted">Posted on: {new Date(ans.createdAt ||ans.date).toLocaleDateString()}</small>
                     </div>
                 ))}
             </div>
