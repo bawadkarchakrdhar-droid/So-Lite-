@@ -5,7 +5,7 @@ import Login from './Login';
 import Dashboard from './Dashboard';
 import AskQuestion from './AskQuestion';
 import QuestionDetail from './QuestionDetail'; // Naya component
-import settings from './settings';
+
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
