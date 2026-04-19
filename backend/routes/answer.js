@@ -5,7 +5,7 @@ const Question = require('../models/Question');
 
 router.post('/', async (req, res) => {
     try {
-        // Frontend se jo keys bhej rahe hain wahi yahan nikal rahe hain
+        // Frontend se 'user' aur 'question' keys aa rahi hain
         const { answerBody, user, question } = req.body;
 
         if (!answerBody || !user || !question) {
@@ -14,13 +14,13 @@ router.post('/', async (req, res) => {
 
         const newAnswer = new Answer({
             answerBody,
-            user,
-            question
+            user,     // Matches Schema
+            question  // Matches Schema
         });
 
         const savedAnswer = await newAnswer.save();
 
-        // Question model mein answer ID update karna
+        // Question model mein update
         await Question.findByIdAndUpdate(question, {
             $push: { answers: savedAnswer._id }
         });

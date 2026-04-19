@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 const QuestionDetail = () => {
-    const { id } = useParams();
+    const { id } = useParams(); // URL se question ID le raha hai
     const [question, setQuestion] = useState(null);
     const [answers, setAnswers] = useState([]);
     const [ansBody, setAnsBody] = useState('');
@@ -29,15 +29,16 @@ const QuestionDetail = () => {
             const userId = localStorage.getItem('userId');
             if (!userId) return alert("Please login first");
 
+            // Data bhejte waqt keys schema se match honi chahiye
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-                answerBody: ansBody, // Spelling fixed
-                user: userId,       // Matching backend schema
-                question: id        // Matching backend schema
+                answerBody: ansBody, // Spelling fix: 'answerBody' (w ke sath)
+                user: userId,       // Matching backend schema keys
+                question: id        
             });
 
             alert("Answer save ho gaya! ✅");
             setAnsBody('');
-            window.location.reload(); // Small 'w'
+            window.location.reload(); // Small 'w' fix
         } catch (err) {
             console.error(err);
             alert("Connection error! Check if backend is live.");
@@ -56,7 +57,7 @@ const QuestionDetail = () => {
                 <h4 className="border-bottom pb-3 mb-4">{answers.length} Answers</h4>
                 {answers.map((ans, i) => (
                     <div key={i} className="py-3 border-bottom">
-                        {/* Safe display logic */}
+                        {/* Dono possible fields check kar raha hai */}
                         <p>{ans.answerBody || ans.body || "Naya answer format mil gaya!"}</p>
                         <small className="text-muted">
                             Posted on: {ans.createdAt ? new Date(ans.createdAt).toLocaleDateString() : "Recently"}
