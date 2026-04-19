@@ -55,7 +55,7 @@ const QuestionDetail = () => {
                 console.log(Answers from backend:",answers);
                 {answers.map((ans, i) => (
                     <div key={i} className="py-3 border-bottom">
-                        <p>{ans.body || ans.answerBody ||"Answer text not found"}</p>
+                        <p>{json.stringify(ans)}</p>
                         <small className="text-muted">Posted on: {new Date(ans.createdAt ||ans.date).toLocaleDateString()}</small>
                     </div>
                 ))}
