@@ -28,13 +28,13 @@ const QuestionDetail = () => {
         try {
             const userId = localStorage.getItem('userId');
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-                body: ansBody,
+                anserBody: ansBody,
                 userId: userId,
                 questionId: id
             });
             alert("Answer save ho gaya! ✅");
             setAnsBody('');
-            Window.location.reload();
+            window.location.reload();
         } catch (err) {
             alert("Connection error!");
         }
