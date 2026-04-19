@@ -28,7 +28,7 @@ const QuestionDetail = () => {
         try {
             const userId = localStorage.getItem('userId');
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-                anserBody: ansBody,
+                answerBody: ansBody,
                 userId: userId,
                 questionId: id
             });
