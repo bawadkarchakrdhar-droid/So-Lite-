@@ -34,7 +34,7 @@ const QuestionDetail = () => {
             });
             alert("Answer save ho gaya! ✅");
             setAnsBody('');
-            loadData(); 
+            Window.location.reload();
         } catch (err) {
             alert("Connection error!");
         }
@@ -55,7 +55,7 @@ const QuestionDetail = () => {
                 console.log(Answers from backend:",answers);
                 {answers.map((ans, i) => (
                     <div key={i} className="py-3 border-bottom">
-                        <p>{ans.body || "Naya answer format mil gaya!"}</p>
+                        <p>{ans.body || ans.answerBody || "Naya answer format mil gaya!"}</p>
                         <small className="text-muted">Posted on: {new Date(ans.createdAt ||ans.date).toLocaleDateString()}</small>
                     </div>
                 ))}
