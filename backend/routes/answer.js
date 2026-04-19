@@ -5,22 +5,16 @@ const Question = require('../models/Question');
 
 router.post('/', async (req, res) => {
     try {
-        // Frontend se 'user' aur 'question' keys match honi chahiye
         const { answerBody, user, question } = req.body;
 
         if (!answerBody || !user || !question) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        const newAnswer = new Answer({
-            answerBody,
-            user,     // Reference to User ID
-            question  // Reference to Question ID
-        });
-
+        const newAnswer = new Answer({ answerBody, user, question });
         const savedAnswer = await newAnswer.save();
 
-        // Push answer ID into the Question's answers array
+        // Question array mein ID push karna
         await Question.findByIdAndUpdate(question, {
             $push: { answers: savedAnswer._id }
         });
