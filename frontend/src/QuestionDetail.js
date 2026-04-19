@@ -28,7 +28,7 @@ const QuestionDetail = () => {
         try {
             const userId = localStorage.getItem('userId');
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-                answerBody: ansBody,
+                body: ansBody,
                 userId: userId,
                 questionId: id
             });
@@ -55,7 +55,7 @@ const QuestionDetail = () => {
                 console.log(Answers from backend:",answers);
                 {answers.map((ans, i) => (
                     <div key={i} className="py-3 border-bottom">
-                        <p>{json.stringify(ans)}</p>
+                        <p>{ans.body || "Naya answer format mil gaya!"}</p>
                         <small className="text-muted">Posted on: {new Date(ans.createdAt ||ans.date).toLocaleDateString()}</small>
                     </div>
                 ))}
