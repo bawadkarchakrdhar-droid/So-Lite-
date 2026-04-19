@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 const QuestionDetail = () => {
-    const { id } = useParams(); // URL se question ID le raha hai
+    const { id } = useParams();
     const [question, setQuestion] = useState(null);
     const [answers, setAnswers] = useState([]);
     const [ansBody, setAnsBody] = useState('');
@@ -29,16 +29,15 @@ const QuestionDetail = () => {
             const userId = localStorage.getItem('userId');
             if (!userId) return alert("Please login first");
 
-            // Data bhejte waqt keys schema se match honi chahiye
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-                answerBody: ansBody, // Spelling fix: 'answerBody' (w ke sath)
-                user: userId,       // Matching backend schema keys
-                question: id        
+                answerBody: ansBody, // Spelling fixed: 'answerBody'
+                user: userId,       // Matching backend schema
+                question: id        // Matching backend schema
             });
 
             alert("Answer save ho gaya! ✅");
             setAnsBody('');
-            window.location.reload(); // Small 'w' fix
+            window.location.reload(); // window ka 'w' small
         } catch (err) {
             console.error(err);
             alert("Connection error! Check if backend is live.");
@@ -57,7 +56,7 @@ const QuestionDetail = () => {
                 <h4 className="border-bottom pb-3 mb-4">{answers.length} Answers</h4>
                 {answers.map((ans, i) => (
                     <div key={i} className="py-3 border-bottom">
-                        {/* Dono possible fields check kar raha hai */}
+                        {/* Safe display logic: check both 'answerBody' and 'body' */}
                         <p>{ans.answerBody || ans.body || "Naya answer format mil gaya!"}</p>
                         <small className="text-muted">
                             Posted on: {ans.createdAt ? new Date(ans.createdAt).toLocaleDateString() : "Recently"}

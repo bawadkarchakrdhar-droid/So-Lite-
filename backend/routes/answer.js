@@ -14,13 +14,13 @@ router.post('/', async (req, res) => {
 
         const newAnswer = new Answer({
             answerBody,
-            user,     // Matches Schema
-            question  // Matches Schema
+            user,     // Schema field matches
+            question  // Schema field matches
         });
 
         const savedAnswer = await newAnswer.save();
 
-        // Question model mein update
+        // Question model mein answer ID update karna
         await Question.findByIdAndUpdate(question, {
             $push: { answers: savedAnswer._id }
         });
