@@ -5,7 +5,7 @@ const Question = require('../models/Question');
 
 router.post('/', async (req, res) => {
     try {
-        // Frontend se 'user' aur 'question' keys aa rahi hain
+        // Frontend se 'user' aur 'question' keys match honi chahiye
         const { answerBody, user, question } = req.body;
 
         if (!answerBody || !user || !question) {
@@ -14,20 +14,20 @@ router.post('/', async (req, res) => {
 
         const newAnswer = new Answer({
             answerBody,
-            user,     // Schema field matches
-            question  // Schema field matches
+            user,     // Reference to User ID
+            question  // Reference to Question ID
         });
 
         const savedAnswer = await newAnswer.save();
 
-        // Question model mein answer ID update karna
+        // Push answer ID into the Question's answers array
         await Question.findByIdAndUpdate(question, {
             $push: { answers: savedAnswer._id }
         });
 
         res.status(201).json(savedAnswer);
     } catch (err) {
-        console.error(err);
+        console.error("Backend Error:", err);
         res.status(500).json({ message: "Server Error", error: err.message });
     }
 });

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 const QuestionDetail = () => {
-    const { id } = useParams();
+    const { id } = useParams(); // URL se ID utha raha hai
     const [question, setQuestion] = useState(null);
     const [answers, setAnswers] = useState([]);
     const [ansBody, setAnsBody] = useState('');
@@ -11,12 +11,16 @@ const QuestionDetail = () => {
 
     const loadData = async () => {
         try {
+            setLoading(true);
+            // URL check: ensures it's calling the correct backend endpoint
             const res = await axios.get(`https://so-lite-backend.onrender.com/api/question/${id}`);
-            setQuestion(res.data);
-            setAnswers(res.data.answers || []);
+            if (res.data) {
+                setQuestion(res.data);
+                setAnswers(res.data.answers || []);
+            }
             setLoading(false);
         } catch (err) {
-            console.error("Fetch error:", err);
+            console.error("Fetch error:", err); // Console mein 404 error yahan se aa raha hai
             setLoading(false);
         }
     };
@@ -27,25 +31,26 @@ const QuestionDetail = () => {
         e.preventDefault();
         try {
             const userId = localStorage.getItem('userId');
-            if (!userId) return alert("Please login first");
+            if (!userId) return alert("Bhai, pehle login kar lo!");
 
+            // Post request matching your backend schema
             await axios.post('https://so-lite-backend.onrender.com/api/answer', {
-                answerBody: ansBody, // Spelling fixed: 'answerBody'
-                user: userId,       // Matching backend schema
-                question: id        // Matching backend schema
+                answerBody: ansBody, 
+                user: userId,       
+                question: id        
             });
 
             alert("Answer save ho gaya! ✅");
             setAnsBody('');
-            window.location.reload(); // window ka 'w' small
+            window.location.reload(); 
         } catch (err) {
             console.error(err);
-            alert("Connection error! Check if backend is live.");
+            alert("Connection error! Answer save nahi hua.");
         }
     };
 
     if (loading) return <div className="container mt-5"><h3>Loading...</h3></div>;
-    if (!question) return <div className="container mt-5"><h3>Question nahi mila!</h3></div>;
+    if (!question) return <div className="container mt-5"><h3>Question nahi mila! (Check URL ID)</h3></div>;
 
     return (
         <div className="container mt-5 mb-5">
@@ -56,7 +61,7 @@ const QuestionDetail = () => {
                 <h4 className="border-bottom pb-3 mb-4">{answers.length} Answers</h4>
                 {answers.map((ans, i) => (
                     <div key={i} className="py-3 border-bottom">
-                        {/* Safe display logic: check both 'answerBody' and 'body' */}
+                        {/* Safe display check for both 'answerBody' and 'body' */}
                         <p>{ans.answerBody || ans.body || "Naya answer format mil gaya!"}</p>
                         <small className="text-muted">
                             Posted on: {ans.createdAt ? new Date(ans.createdAt).toLocaleDateString() : "Recently"}
