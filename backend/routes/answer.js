@@ -5,8 +5,8 @@ const Question = require('../models/Question');
 
 router.post('/', async (req, res) => {
     try {
-        const { answerBody, userId, questionId } = req.body;
-        const newAnswer = new Answer({ answerBody, user: userId, question: questionId });
+        const { body, answerBody, userId, questionId } = req.body;
+        const newAnswer = new Answer({ answerBody: body, user: userId, question: questionId });
         const savedAnswer = await newAnswer.save();
 
         // Question mein answer link karna zaroori hai
