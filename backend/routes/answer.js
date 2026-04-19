@@ -5,18 +5,30 @@ const Question = require('../models/Question');
 
 router.post('/', async (req, res) => {
     try {
-        const { body, answerBody, userId, questionId } = req.body;
-        const newAnswer = new Answer({ answerBody: body, user: userId, question: questionId });
+        // Frontend se jo keys bhej rahe hain wahi yahan nikal rahe hain
+        const { answerBody, user, question } = req.body;
+
+        if (!answerBody || !user || !question) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const newAnswer = new Answer({
+            answerBody,
+            user,
+            question
+        });
+
         const savedAnswer = await newAnswer.save();
 
-        // Question mein answer link karna zaroori hai
-        await Question.findByIdAndUpdate(questionId, {
+        // Question model mein answer ID update karna
+        await Question.findByIdAndUpdate(question, {
             $push: { answers: savedAnswer._id }
         });
 
         res.status(201).json(savedAnswer);
     } catch (err) {
-        res.status(500).json({ message: "Fail" });
+        console.error(err);
+        res.status(500).json({ message: "Server Error", error: err.message });
     }
 });
 
