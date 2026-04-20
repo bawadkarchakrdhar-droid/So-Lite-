@@ -22,7 +22,7 @@ mongoose.connect(process.env.MONGO_URI)
 // 3. ROUTES CONFIGURATION
 // Dhyaan dein: Routes ke paths wahi hain jo aapne pehle use kiye the
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/questions', require('./routes/questions')); // 's' check kar lena
+app.use('/api/question', require('./routes/questions')); // 's' check kar lena
 app.use('/api/answer', require('./routes/answer'));
 
 // 4. SERVER STATUS CHECK
