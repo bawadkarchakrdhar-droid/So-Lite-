@@ -19,7 +19,7 @@ const QuestionDetail = () => {
                 setAnswers(res.data.answers || []);
             }
         } catch (err) {
-            console.error("Fetch error details:", err.response); //check if 404 or 500
+            console.error("Fetch error details:", err.response); //check if 404 or 500git gi 
         } finally {
             setLoading(false);
         }
