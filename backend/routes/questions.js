@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
 // GET single question by ID
 router.get('/:id', async (req, res) => {
     try {
-        const question = await Question.findById(req.params.id);
+        const question = await Question.findById(req.params.id).populate('answers');
         if (!question) return res.status(404).json({ message: "Question not found" });
         res.json(question);
     } catch (err) {
