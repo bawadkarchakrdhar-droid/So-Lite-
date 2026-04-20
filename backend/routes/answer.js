@@ -6,22 +6,22 @@ const Question = require('../models/Question');
 // POST: /api/answer
 router.post('/', async (req, res) => {
     try {
-        const { answerBody, userId, questionId } = req.body; // Frontend se aane wale names
+        const { answerBody, user, question } = req.body;
 
-        if (!answerBody || !userId || !questionId) {
-            return res.status(400).json({ message: "Fields missing!" });
+        if (!answerBody || !user || !question) {
+            return res.status(400).json({ message: "All fields are required!" });
         }
 
         const newAnswer = new Answer({
             answerBody,
-            user: userId,
-            question: questionId
+            user,
+            question
         });
 
         const savedAnswer = await newAnswer.save();
 
-        // Question mein answer push karna
-        await Question.findByIdAndUpdate(questionId, {
+        // Question collection mein answers array update karna
+        await Question.findByIdAndUpdate(question, {
             $push: { answers: savedAnswer._id }
         });
 
