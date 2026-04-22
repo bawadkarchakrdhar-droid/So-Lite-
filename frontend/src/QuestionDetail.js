@@ -13,11 +13,9 @@ const QuestionDetail = () => {
     const loadData = async () => {
         try {
             setLoading(true);
-            // Sahi route hit kar rahe hain
             const res = await axios.get(`https://so-lite-backend.onrender.com/api/question/${id}`);
             if (res.data) {
                 setQuestion(res.data);
-                // Backend se answers ko array ki tarah set kar rahe hain
                 setAnswers(res.data.answers || []);
             }
         } catch (err) {
@@ -43,7 +41,6 @@ const QuestionDetail = () => {
             });
 
             alert("Answer successfully posted! ✅");
-            // Naya answer list mein add kar rahe hain taaki turant dikhe
             setAnswers([...answers, res.data]);
             setAnsBody('');
             setIsPreview(false);
@@ -57,7 +54,7 @@ const QuestionDetail = () => {
 
     return (
         <div className="container mt-5 mb-5">
-            {/* Question Section */}
+            {/* Question Display */}
             <div className="p-4 shadow-sm border rounded bg-white mb-4">
                 <h1 className="fw-bold text-primary">{question.title}</h1>
                 <p className="fs-5 text-secondary">{question.description}</p>
@@ -65,57 +62,75 @@ const QuestionDetail = () => {
 
             <hr />
             
-            {/* Solutions List Section */}
-            <h4 className="mb-4 fw-bold text-dark">✨ {answers.length} Solutions</h4>
-            <div className="answers-display">
+            {/* Solutions List */}
+            <h4 className="mb-4 fw-bold text-dark">✨ {answers.length} Solutions Found</h4>
+            <div className="answers-display mb-5">
                 {answers.length > 0 ? (
                     answers.map((ans, i) => (
-                        <div key={i} className="p-3 mb-3 border-start border-4 border-info bg-light rounded shadow-sm">
-                            {/* Atlas mein answerBody save ho raha hai */}
-                            <p className="mb-0" style={{ whiteSpace: 'pre-wrap', color: '#2c3e50', fontSize: '1.05rem' }}>
+                        <div key={i} className="p-4 mb-3 border-start border-4 border-info bg-light rounded shadow-sm">
+                            <p className="mb-0" style={{ whiteSpace: 'pre-wrap', color: '#2c3e50', fontSize: '1.1rem', lineHeight: '1.6' }}>
                                 {ans.answerBody || "No text content found"}
                             </p>
-                            <div className="mt-2 text-end">
-                                <small className="text-muted italic">Verified Solution</small>
-                            </div>
                         </div>
                     ))
                 ) : (
-                    <div className="alert alert-warning">Abhi tak koi answer nahi hai. Neeche box mein answer likhein!</div>
+                    <div className="alert alert-warning">Abhi tak koi answer nahi hai. Neeche AI box mein likhein!</div>
                 )}
             </div>
 
-            {/* Advance AI Answer Box */}
-            <div className="mt-5 p-4 border rounded shadow-lg bg-dark text-white">
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h5 className="mb-0 text-info">🤖 AI Assistant Mode</h5>
+            {/* --- UPGRADED BIG AI ANSWER BOX --- */}
+            <div className="mt-5 p-4 border-0 rounded-4 shadow-lg bg-dark text-white">
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h5 className="mb-0 text-info d-flex align-items-center gap-2">
+                        <span className="badge bg-info text-dark">AI</span> 
+                        <span>Smart Editor Mode</span>
+                    </h5>
                     <button 
-                        className={`btn btn-sm ${isPreview ? 'btn-light' : 'btn-outline-light'}`}
+                        className={`btn btn-sm rounded-pill px-4 ${isPreview ? 'btn-light' : 'btn-outline-info'}`}
                         type="button"
                         onClick={() => setIsPreview(!isPreview)}
                     >
-                        {isPreview ? "✍️ Edit Mode" : "👁️ Preview Mode"}
+                        {isPreview ? "✍️ BACK TO EDIT" : "👁️ LIVE PREVIEW"}
                     </button>
                 </div>
 
                 <form onSubmit={handleAns}>
                     {!isPreview ? (
-                        <textarea 
-                            className="form-control bg-dark text-white border-secondary mb-3" 
-                            rows="6" 
-                            style={{ fontSize: '1rem', fontFamily: 'monospace', border: '1px solid #444' }}
-                            value={ansBody} 
-                            onChange={(e) => setAnsBody(e.target.value)} 
-                            placeholder="Type your technical solution here using AI style..."
-                        ></textarea>
+                        <div className="position-relative">
+                            <textarea 
+                                className="form-control bg-dark text-white border-secondary shadow-none" 
+                                rows="12"  // Bada size
+                                style={{ 
+                                    fontSize: '1.1rem', 
+                                    fontFamily: "monospace", 
+                                    border: '1px solid #444',
+                                    padding: '25px',
+                                    lineHeight: '1.6',
+                                    borderRadius: '15px'
+                                }}
+                                value={ansBody} 
+                                onChange={(e) => setAnsBody(e.target.value)} 
+                                placeholder="Write your detailed technical solution here... (Box will auto-expand if needed)"
+                            ></textarea>
+                        </div>
                     ) : (
-                        <div className="p-3 mb-3 bg-secondary rounded" style={{ minHeight: '150px', whiteSpace: 'pre-wrap', border: '1px dashed #fff' }}>
-                            {ansBody || "Kuch likho bhai preview dekhne ke liye..."}
+                        <div className="p-4 mb-3 bg-dark rounded-4 border border-info" 
+                            style={{ 
+                                minHeight: '300px', 
+                                whiteSpace: 'pre-wrap', 
+                                color: '#e0e0e0',
+                                fontSize: '1.1rem',
+                                borderStyle: 'dashed'
+                            }}>
+                            {ansBody || "Bhai kuch type karo tabhi preview dikhega!"}
                         </div>
                     )}
-                    <button type="submit" className="btn btn-info w-100 fw-bold py-2 shadow-sm text-uppercase">
-                        🚀 POST ANSWER
-                    </button>
+                    
+                    <div className="mt-4">
+                        <button type="submit" className="btn btn-info w-100 fw-bold py-3 shadow-lg rounded-pill">
+                            🚀 PUBLISH TO COMMUNITY
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
