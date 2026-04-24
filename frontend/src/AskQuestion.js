@@ -33,7 +33,8 @@ const AskQuestion = () => {
         }
     }; // handleSubmit function yahan khatam ho raha hai
 
-    // Return hamesha function ke andar hona chahiye
+             
+           // Return hamesha function ke andar hona chahiye
     return (
         <div className="container mt-5">
             <h2 className="fw-bold mb-4">Ask a public question</h2>
