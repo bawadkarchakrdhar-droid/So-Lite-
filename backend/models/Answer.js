@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const AnswerSchema = new mongoose.Schema({
-    text: { // Ye naam frontend se match karna chahiye
+    answerBody: { // Ye naam frontend se match karna chahiye
         type: String, 
         required: true 
     },
