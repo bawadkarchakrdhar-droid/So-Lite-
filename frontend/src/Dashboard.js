@@ -9,7 +9,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchQuestions = async () => {
             try {
-                const res = await axios.get('https://so-lite-backend.onrender.com/api/question');
+                const res = await axios.get('https://so-lite-backend.onrender.com/api/questions');
                 setQuestions(res.data);
             } catch (err) { console.error(err); }
         };
