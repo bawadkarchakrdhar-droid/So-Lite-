@@ -13,7 +13,7 @@ const QuestionDetail = () => {
     const loadData = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://so-lite-backend.onrender.com/api/question/${id}`);
+            const res = await axios.get(`https://so-lite-backend.onrender.com/api/questions/${id}`);
             if (res.data) {
                 setQuestion(res.data);
                 // Backend se populated answers array set ho raha hai
