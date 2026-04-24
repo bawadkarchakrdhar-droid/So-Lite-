@@ -18,12 +18,18 @@ router.get('/:id', async (req, res) => {
 // POST a new question
 router.post('/', async (req, res) => {
     const { title, description, tags, userId } = req.body;
+
+    if (!title || !description || !userId) {
+        return res.status(400).json({ message: "Bhai, saare fields bharo!" });
+    }
+
     const newQuestion = new Question({
         title,
         description,
         tags,
-        user: userId
+        user: userId // Make sure 'user' matches your MongoDB Schema
     });
+
     try {
         const savedQuestion = await newQuestion.save();
         res.status(201).json(savedQuestion);

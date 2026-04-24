@@ -2,29 +2,27 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const AskQuestion = () => {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [tags, setTags] = useState('');
-    const navigate = useNavigate();
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    const userId = localStorage.getItem('userId');
+    if (!userId) return alert("Bhai, pehle login karo!");
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            // Logic 100% same
-            await axios.post('https://so-lite-backend.onrender.com/api/questions', {
-                title,
-                description,
-                tags: tags.split(',').map(tag => tag.trim()),
-                userId: localStorage.getItem('userId') || 'Anonymous_User'
-            });
-            alert("Question posted successfully! 🚀");
-            navigate('/');
-        } catch (err) {
-            console.error(err);
-            alert("Question not posted .");
-        }
-    };
+    try {
+        // Dhyaan dena: URL 'question' hai, 'questions' nahi
+        await axios.post('https://so-lite-backend.onrender.com/api/question', {
+            title: title,
+            description: description,
+            tags: tags.split(',').map(tag => tag.trim()), 
+            userId: userId // Backend expects 'userId'
+        });
+
+        alert("Question posted successfully! 🚀");
+        navigate('/dashboard');
+    } catch (err) {
+        console.error(err.response?.data);
+        alert("Question not posted. Backend check karo!"); 
+    }
+};
 
     return (
         <div className="container py-5">
