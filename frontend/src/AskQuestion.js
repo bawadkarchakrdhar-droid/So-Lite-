@@ -10,75 +10,100 @@ const AskQuestion = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userId = localStorage.getItem('userId');
-        
-        if (!userId) {
-            return alert("Bhai, pehle login karo!");
-        }
-
         try {
-            // Logic 100% fixed now
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('userId');
+
             await axios.post('https://so-lite-backend.onrender.com/api/question', {
                 title,
                 description,
                 tags: tags.split(',').map(tag => tag.trim()),
-                userId: userId
+                userId
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
             });
 
-            alert("Question posted successfully! 🚀");
-            navigate('/dashboard');
+            alert("Question posted successfully!");
+            navigate('/dashboard'); // Post hone ke baad dashboard pe bhej dega
         } catch (err) {
             console.error(err);
-            alert("Question not posted. Backend check karo!");
+            alert("Error posting question. Check if you are logged in.");
         }
-    }; // handleSubmit function yahan khatam ho raha hai
+    };
 
-             
-           // Return hamesha function ke andar hona chahiye
     return (
-        <div className="container mt-5">
-            <h2 className="fw-bold mb-4">Ask a public question</h2>
-            <div className="card p-4 shadow-sm border-0 rounded-4">
+        <div className="container mt-5 mb-5" style={{ maxWidth: '850px' }}>
+            <div className="d-flex align-items-center mb-4">
+                <h2 className="fw-bold">Ask a public question</h2>
+            </div>
+
+            {/* Blue Info Box for Guidance */}
+            <div className="card mb-4" style={{ backgroundColor: '#ebf4fb', border: '1px solid #a6d3f2' }}>
+                <div className="card-body">
+                    <h5 className="card-title text-dark">Writing a good question</h5>
+                    <p className="card-text small text-muted mb-0">
+                        You’re ready to ask a programming-related question. Summarize your problem, 
+                        describe what you tried, and add tags to help others find it.
+                    </p>
+                </div>
+            </div>
+
+            {/* Main Form Card */}
+            <div className="card shadow-sm p-4 border-1">
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label className="form-label fw-bold">Title</label>
+                    
+                    {/* Title Section */}
+                    <div className="mb-4">
+                        <label className="form-label fw-bold mb-0">Title</label>
+                        <p className="text-muted small mb-2">Be specific and imagine you’re asking a question to another person.</p>
                         <input 
                             type="text" 
-                            className="form-control" 
-                            placeholder="e.g. How to fix Java SQL error?" 
-                            value={title} 
-                            onChange={(e) => setTitle(e.target.value)} 
-                            required 
+                            className="form-control p-2 border-secondary-subtle" 
+                            placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            required
                         />
                     </div>
-                    <div className="mb-3">
-                        <label className="form-label fw-bold">Description</label>
+
+                    {/* Description Section */}
+                    <div className="mb-4">
+                        <label className="form-label fw-bold mb-0">What are the details of your problem?</label>
+                        <p className="text-muted small mb-2">Introduce the problem and expand on what you put in the title.</p>
                         <textarea 
-                            className="form-control" 
-                            rows="6" 
-                            placeholder="Explain your problem in detail..." 
-                            value={description} 
-                            onChange={(e) => setDescription(e.target.value)} 
+                            className="form-control border-secondary-subtle" 
+                            rows="8" 
+                            placeholder="Describe your problem in detail..."
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             required
                         ></textarea>
                     </div>
-                    <div className="mb-3">
-                        <label className="form-label fw-bold">Tags</label>
+
+                    {/* Tags Section */}
+                    <div className="mb-4">
+                        <label className="form-label fw-bold mb-0">Tags</label>
+                        <p className="text-muted small mb-2">Add up to 5 tags to describe what your question is about (comma separated).</p>
                         <input 
                             type="text" 
-                            className="form-control" 
-                            placeholder="e.g. java, maven, react (comma separated)" 
-                            value={tags} 
-                            onChange={(e) => setTags(e.target.value)} 
+                            className="form-control border-secondary-subtle" 
+                            placeholder="e.g. (java, react-js, maven)"
+                            value={tags}
+                            onChange={(e) => setTags(e.target.value)}
+                            required
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary w-100 py-2 fw-bold">
-                        Post Your Question
-                    </button>
+
+                    {/* Submit Button */}
+                    <div className="mt-4">
+                        <button type="submit" className="btn btn-primary px-4 py-2 fw-bold shadow-sm">
+                            Post Your Question
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     );
-}; // AskQuestion component yahan khatam ho raha hai
+};
 
 export default AskQuestion;
