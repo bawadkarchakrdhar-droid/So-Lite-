@@ -42,7 +42,7 @@ const QuestionDetail = () => {
             });
 
             alert("Answer posted! ✅");
-            setAnswers([...answers, res.data]);
+            await loadData();
             setAnsBody('');
             setIsPreview(false);
         } catch (err) {
