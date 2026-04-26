@@ -6,14 +6,14 @@ const Question = require('../models/Question');
 // POST: /api/answer
 router.post('/', async (req, res) => {
     try {
-        const { answerBody, user, question } = req.body;
+        const { answerBody, user, question, answer, text } = req.body;
 
         if (!answerBody || !user || !question) {
             return res.status(400).json({ message: "All fields are required!" });
         }
 
         const newAnswer = new Answer({
-            answerBody,
+            answerBody: answerBody || answer || text,
             user,
             question
         });
