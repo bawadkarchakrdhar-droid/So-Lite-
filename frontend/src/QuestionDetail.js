@@ -26,7 +26,11 @@ const QuestionDetail = () => {
         }
     };
 
-    useEffect(() => { if (id) loadData(); }, [id]);
+    useEffect(() => {
+         if (id) loadData();
+         // eslint-disable-next-line
+         react-hooks/exhaustive-deps
+         }, [id]);
 
     const handleAns = async (e) => {
         e.preventDefault();
@@ -75,7 +79,7 @@ const QuestionDetail = () => {
 
             <div className="mt-5 p-4 border-0 rounded-4 shadow-lg bg-dark text-white">
                 <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h5 className="mb-0 text-info font-monospace">// AI_EDITOR_MODE</h5>
+                    <h5 className="mb-0 text-info font-monospace">// {/*AI_EDITOR_MODE */}</h5>
                     <button 
                         className={`btn btn-sm rounded-pill px-4 ${isPreview ? 'btn-light' : 'btn-outline-info'}`}
                         type="button"
