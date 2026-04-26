@@ -67,7 +67,7 @@ const QuestionDetail = () => {
                 {answers.map((ans, i) => (
                     <div key={i} className="p-4 mb-3 border-0 bg-light rounded-4 shadow-sm">
                         <p className="mb-0" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', fontSize: '1.1rem' }}>
-                            {ans.answerBody || "No content"}
+                            {ans && typeof ans === 'object' ? ans.answerBody : ans}
                         </p>
                     </div>
                 ))}
